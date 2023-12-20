@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0181cc27d637d9f2606dbf33fac4ddf5a64162ca
+ 0181cc27d637d9f2606dbf33fac4ddf5a64162ca Add support for various laptops using CS35L41 HDA without _DSD
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/ed5f19c3892cc5dcfe95dd4d296c5e617a26c821
  ed5f19c3892cc5dcfe95dd4d296c5e617a26c821 Revert "netfilter: nf_tables: remove catchall element in GC sync path"
 

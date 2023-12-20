@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.7
-%define specversion 6.6.7
+%define specrpmversion 6.6.8
+%define specversion 6.6.8
 %define patchversion 6.6
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.7
+%define tarfile_release 6.6.8
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.7
+%define kabiversion 6.6.8
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3709,6 +3709,15 @@ fi\
 #
 #
 %changelog
+* Wed Dec 20 2023 Augusto Caringi <acaringi@redhat.com> [6.6.8-0]
+- Add BugsFixed entries for rhbz#2254797 and #rhbz2254704 (Justin M. Forbes)
+- Add support for various laptops using CS35L41 HDA without _DSD (Stefan Binding)
+- fedora: arm64: Enable required AllWinner pinctrl drivers (Peter Robinson)
+- fedora: arm64: cleanup Allwinner Pinctrl drivers (Peter Robinson)
+- fedora: aarch64: Enable some DW drivers (Peter Robinson)
+- Basic scaffolding to create a kernel-headers package (Justin M. Forbes)
+- Linux v6.6.8
+
 * Wed Dec 13 2023 Augusto Caringi <acaringi@redhat.com> [6.6.7-0]
 - Add rhbz#2253632 rhbz#2253633 to BugsFixed (Justin M. Forbes)
 - Turn on DRM_ACCEL drivers for Fedora (Justin M. Forbes)

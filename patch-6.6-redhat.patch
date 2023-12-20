@@ -1,30 +1,30 @@
- Makefile                                           |  20 ++-
+ Makefile                                           |  20 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  22 ++-
+ arch/x86/kernel/setup.c                            |  22 +-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 ++
- drivers/ata/libahci.c                              |  18 +++
- drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
+ drivers/acpi/scan.c                                |   9 +
+ drivers/ata/libahci.c                              |  18 ++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++++++++++----
- drivers/firmware/efi/secureboot.c                  |  38 +++++
- drivers/firmware/sysfb.c                           |  18 ++-
- drivers/hid/hid-rmi.c                              |  66 --------
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
- drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
- drivers/iommu/iommu.c                              |  22 +++
- drivers/pci/quirks.c                               |  24 +++
- drivers/rtc/rtc-cmos.c                             |  18 ++-
- drivers/scsi/sd.c                                  |  10 ++
+ drivers/firmware/efi/efi.c                         | 124 +++++--
+ drivers/firmware/efi/secureboot.c                  |  38 +++
+ drivers/firmware/sysfb.c                           |  18 +-
+ drivers/hid/hid-rmi.c                              |  66 ----
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
+ drivers/iommu/iommu.c                              |  22 ++
+ drivers/pci/quirks.c                               |  24 ++
+ drivers/rtc/rtc-cmos.c                             |  18 +-
+ drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 ++-
+ include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   1 +
- include/linux/rh_kabi.h                            | 172 +++++++++++++++++++++
+ include/linux/rh_kabi.h                            | 172 ++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
@@ -32,13 +32,17 @@
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 ++
+ security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 ++
- 37 files changed, 681 insertions(+), 181 deletions(-)
+ security/security.c                                |  12 +
+ sound/pci/hda/cs35l41_hda.c                        |   2 +
+ sound/pci/hda/cs35l41_hda.h                        |   5 +-
+ sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
+ sound/pci/hda/patch_realtek.c                      |  38 ++-
+ 41 files changed, 1034 insertions(+), 228 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 707952172ece..456d7d6b52d6 100644
+index 891ef640396c..9ecd654b31bf 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1557,3 +1561,512 @@ index 23b129d482a7..55d0fe0d121b 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
+diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
+index 3c157b006a5a..a942fe807e12 100644
+--- a/sound/pci/hda/cs35l41_hda.c
++++ b/sound/pci/hda/cs35l41_hda.c
+@@ -1684,6 +1684,7 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
+ 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
+ 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
+ 	gpiod_put(cs35l41->reset_gpio);
++	gpiod_put(cs35l41->cs_gpio);
+ 	kfree(cs35l41->acpi_subsystem_id);
+ 
+ 	return ret;
+@@ -1708,6 +1709,7 @@ void cs35l41_hda_remove(struct device *dev)
+ 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
+ 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
+ 	gpiod_put(cs35l41->reset_gpio);
++	gpiod_put(cs35l41->cs_gpio);
+ 	kfree(cs35l41->acpi_subsystem_id);
+ }
+ EXPORT_SYMBOL_NS_GPL(cs35l41_hda_remove, SND_HDA_SCODEC_CS35L41);
+diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
+index b93bf762976e..2251027c2cf8 100644
+--- a/sound/pci/hda/cs35l41_hda.h
++++ b/sound/pci/hda/cs35l41_hda.h
+@@ -34,8 +34,8 @@ struct cs35l41_amp_efi_data {
+ } __packed;
+ 
+ enum cs35l41_hda_spk_pos {
+-	CS35l41_LEFT,
+-	CS35l41_RIGHT,
++	CS35L41_LEFT,
++	CS35L41_RIGHT,
+ };
+ 
+ enum cs35l41_hda_gpio_function {
+@@ -49,6 +49,7 @@ struct cs35l41_hda {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	struct gpio_desc *reset_gpio;
++	struct gpio_desc *cs_gpio;
+ 	struct cs35l41_hw_cfg hw_cfg;
+ 	struct hda_codec *codec;
+ 
+diff --git a/sound/pci/hda/cs35l41_hda_property.c b/sound/pci/hda/cs35l41_hda_property.c
+index b62a4e6968e2..c9eb70290973 100644
+--- a/sound/pci/hda/cs35l41_hda_property.c
++++ b/sound/pci/hda/cs35l41_hda_property.c
+@@ -6,9 +6,300 @@
+ //
+ // Author: Stefan Binding <sbinding@opensource.cirrus.com>
+ 
++#include <linux/acpi.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/string.h>
+ #include "cs35l41_hda_property.h"
++#include <linux/spi/spi.h>
++
++#define MAX_AMPS 4
++
++struct cs35l41_config {
++	const char *ssid;
++	enum {
++		SPI,
++		I2C
++	} bus;
++	int num_amps;
++	enum {
++		INTERNAL,
++		EXTERNAL
++	} boost_type;
++	u8 channel[MAX_AMPS];
++	int reset_gpio_index; /* -1 if no reset gpio */
++	int spkid_gpio_index; /* -1 if no spkid gpio */
++	int cs_gpio_index; /* -1 if no cs gpio, or cs-gpios already exists, max num amps == 2 */
++	int boost_ind_nanohenry; /* Required if boost_type == Internal */
++	int boost_peak_milliamp; /* Required if boost_type == Internal */
++	int boost_cap_microfarad; /* Required if boost_type == Internal */
++};
++
++static const struct cs35l41_config cs35l41_config_table[] = {
++/*
++ * Device 103C89C6 does have _DSD, however it is setup to use the wrong boost type.
++ * We can override the _DSD to correct the boost type here.
++ * Since this laptop has valid ACPI, we do not need to handle cs-gpios, since that already exists
++ * in the ACPI. The Reset GPIO is also valid, so we can use the Reset defined in _DSD.
++ */
++	{ "103C89C6", SPI, 2, INTERNAL, { CS35L41_RIGHT, CS35L41_LEFT, 0, 0 }, -1, -1, -1, 1000, 4500, 24 },
++	{ "104312AF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431433", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431463", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431473", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
++	{ "10431483", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
++	{ "10431493", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "104314D3", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "104314E3", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431503", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431533", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431573", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431663", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
++	{ "104316D3", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
++	{ "104316F3", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
++	{ "104317F3", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431863", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "104318D3", I2C, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 0, 0, 0 },
++	{ "10431C9F", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431CAF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431CCF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431CDF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431CEF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
++	{ "10431D1F", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431DA2", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
++	{ "10431E02", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
++	{ "10431EE2", I2C, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, -1, -1, 0, 0, 0 },
++	{ "10431F12", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
++	{ "10431F1F", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 0, 0, 0 },
++	{ "10431F62", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
++	{}
++};
++
++static int cs35l41_add_gpios(struct cs35l41_hda *cs35l41, struct device *physdev, int reset_gpio,
++			     int spkid_gpio, int cs_gpio_index, int num_amps)
++{
++	struct acpi_gpio_mapping *gpio_mapping;
++	struct acpi_gpio_params *reset_gpio_params;
++	struct acpi_gpio_params *spkid_gpio_params;
++	struct acpi_gpio_params *cs_gpio_params;
++	unsigned int num_entries = 0;
++	unsigned int reset_index, spkid_index, csgpio_index;
++	int i;
++
++	/*
++	 * GPIO Mapping only needs to be done once, since it would be available for subsequent amps
++	 */
++	if (cs35l41->dacpi->driver_gpios)
++		return 0;
++
++	if (reset_gpio >= 0) {
++		reset_index = num_entries;
++		num_entries++;
++	}
++
++	if (spkid_gpio >= 0) {
++		spkid_index = num_entries;
++		num_entries++;
++	}
++
++	if ((cs_gpio_index >= 0)  && (num_amps == 2)) {
++		csgpio_index = num_entries;
++		num_entries++;
++	}
++
++	if (!num_entries)
++		return 0;
++
++	/* must include termination entry */
++	num_entries++;
++
++	gpio_mapping = devm_kcalloc(physdev, num_entries, sizeof(struct acpi_gpio_mapping),
++				    GFP_KERNEL);
++
++	if (!gpio_mapping)
++		goto err;
++
++	if (reset_gpio >= 0) {
++		gpio_mapping[reset_index].name = "reset-gpios";
++		reset_gpio_params = devm_kcalloc(physdev, num_amps, sizeof(struct acpi_gpio_params),
++						 GFP_KERNEL);
++		if (!reset_gpio_params)
++			goto err;
++
++		for (i = 0; i < num_amps; i++)
++			reset_gpio_params[i].crs_entry_index = reset_gpio;
++
++		gpio_mapping[reset_index].data = reset_gpio_params;
++		gpio_mapping[reset_index].size = num_amps;
++	}
++
++	if (spkid_gpio >= 0) {
++		gpio_mapping[spkid_index].name = "spk-id-gpios";
++		spkid_gpio_params = devm_kcalloc(physdev, num_amps, sizeof(struct acpi_gpio_params),
++						 GFP_KERNEL);
++		if (!spkid_gpio_params)
++			goto err;
++
++		for (i = 0; i < num_amps; i++)
++			spkid_gpio_params[i].crs_entry_index = spkid_gpio;
++
++		gpio_mapping[spkid_index].data = spkid_gpio_params;
++		gpio_mapping[spkid_index].size = num_amps;
++	}
++
++	if ((cs_gpio_index >= 0) && (num_amps == 2)) {
++		gpio_mapping[csgpio_index].name = "cs-gpios";
++		/* only one GPIO CS is supported without using _DSD, obtained using index 0 */
++		cs_gpio_params = devm_kzalloc(physdev, sizeof(struct acpi_gpio_params), GFP_KERNEL);
++		if (!cs_gpio_params)
++			goto err;
++
++		cs_gpio_params->crs_entry_index = cs_gpio_index;
++
++		gpio_mapping[csgpio_index].data = cs_gpio_params;
++		gpio_mapping[csgpio_index].size = 1;
++	}
++
++	return devm_acpi_dev_add_driver_gpios(physdev, gpio_mapping);
++err:
++	devm_kfree(physdev, gpio_mapping);
++	devm_kfree(physdev, reset_gpio_params);
++	devm_kfree(physdev, spkid_gpio_params);
++	devm_kfree(physdev, cs_gpio_params);
++	return -ENOMEM;
++}
++
++static int generic_dsd_config(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
++			      const char *hid)
++{
++	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
++	const struct cs35l41_config *cfg;
++	struct gpio_desc *cs_gpiod;
++	struct spi_device *spi;
++	bool dsd_found;
++	int ret;
++
++	for (cfg = cs35l41_config_table; cfg->ssid; cfg++) {
++		if (!strcasecmp(cfg->ssid, cs35l41->acpi_subsystem_id))
++			break;
++	}
++
++	if (!cfg->ssid)
++		return -ENOENT;
++
++	if (!cs35l41->dacpi || cs35l41->dacpi != ACPI_COMPANION(physdev)) {
++		dev_err(cs35l41->dev, "ACPI Device does not match, cannot override _DSD.\n");
++		return -ENODEV;
++	}
++
++	dev_info(cs35l41->dev, "Adding DSD properties for %s\n", cs35l41->acpi_subsystem_id);
++
++	dsd_found = acpi_dev_has_props(cs35l41->dacpi);
++
++	if (!dsd_found) {
++		ret = cs35l41_add_gpios(cs35l41, physdev, cfg->reset_gpio_index,
++						 cfg->spkid_gpio_index, cfg->cs_gpio_index,
++						 cfg->num_amps);
++		if (ret) {
++			dev_err(cs35l41->dev, "Error adding GPIO mapping: %d\n", ret);
++			return ret;
++		}
++	} else if (cfg->reset_gpio_index >= 0 || cfg->spkid_gpio_index >= 0) {
++		dev_warn(cs35l41->dev, "Cannot add Reset/Speaker ID/SPI CS GPIO Mapping, "
++			 "_DSD already exists.\n");
++	}
++
++	if (cfg->bus == SPI) {
++		cs35l41->index = id;
++		/*
++		 * Manually set the Chip Select for the second amp <cs_gpio_index> in the node.
++		 * This is only supported for systems with 2 amps, since we cannot expand the
++		 * default number of chip selects without using cs-gpios
++		 * The CS GPIO must be set high prior to communicating with the first amp (which
++		 * uses a native chip select), to ensure the second amp does not clash with the
++		 * first.
++		 */
++		if (cfg->cs_gpio_index >= 0) {
++			spi = to_spi_device(cs35l41->dev);
++
++			if (cfg->num_amps != 2) {
++				dev_warn(cs35l41->dev,
++					 "Cannot update SPI CS, Number of Amps (%d) != 2\n",
++					 cfg->num_amps);
++			} else if (dsd_found) {
++				dev_warn(cs35l41->dev,
++					"Cannot update SPI CS, _DSD already exists.\n");
++			} else {
++				/*
++				 * This is obtained using driver_gpios, since only one GPIO for CS
++				 * exists, this can be obtained using index 0.
++				 */
++				cs_gpiod = gpiod_get_index(physdev, "cs", 0, GPIOD_OUT_LOW);
++				if (IS_ERR(cs_gpiod)) {
++					dev_err(cs35l41->dev,
++						"Unable to get Chip Select GPIO descriptor\n");
++					return PTR_ERR(cs_gpiod);
++				}
++				if (id == 1) {
++					spi_set_csgpiod(spi, 0, cs_gpiod);
++					cs35l41->cs_gpio = cs_gpiod;
++				} else {
++					gpiod_set_value_cansleep(cs_gpiod, true);
++					gpiod_put(cs_gpiod);
++				}
++				spi_setup(spi);
++			}
++		}
++	} else {
++		if (cfg->num_amps > 2)
++			/*
++			 * i2c addresses for 3/4 amps are used in order: 0x40, 0x41, 0x42, 0x43,
++			 * subtracting 0x40 would give zero-based index
++			 */
++			cs35l41->index = id - 0x40;
++		else
++			/* i2c addr 0x40 for first amp (always), 0x41/0x42 for 2nd amp */
++			cs35l41->index = id == 0x40 ? 0 : 1;
++	}
++
++	if (cfg->num_amps == 3)
++		/* 3 amps means a center channel, so no duplicate channels */
++		cs35l41->channel_index = 0;
++	else
++		/*
++		 * if 4 amps, there are duplicate channels, so they need different indexes
++		 * if 2 amps, no duplicate channels, channel_index would be 0
++		 */
++		cs35l41->channel_index = cs35l41->index / 2;
++
++	cs35l41->reset_gpio = fwnode_gpiod_get_index(acpi_fwnode_handle(cs35l41->dacpi), "reset",
++						     cs35l41->index, GPIOD_OUT_LOW,
++						     "cs35l41-reset");
++	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, cs35l41->index, cfg->num_amps, -1);
++
++	hw_cfg->spk_pos = cfg->channel[cs35l41->index];
++
++	if (cfg->boost_type == INTERNAL) {
++		hw_cfg->bst_type = CS35L41_INT_BOOST;
++		hw_cfg->bst_ind = cfg->boost_ind_nanohenry;
++		hw_cfg->bst_ipk = cfg->boost_peak_milliamp;
++		hw_cfg->bst_cap = cfg->boost_cap_microfarad;
++		hw_cfg->gpio1.func = CS35L41_NOT_USED;
++		hw_cfg->gpio1.valid = true;
++	} else {
++		hw_cfg->bst_type = CS35L41_EXT_BOOST;
++		hw_cfg->bst_ind = -1;
++		hw_cfg->bst_ipk = -1;
++		hw_cfg->bst_cap = -1;
++		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
++		hw_cfg->gpio1.valid = true;
++	}
++
++	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
++	hw_cfg->gpio2.valid = true;
++	hw_cfg->valid = true;
++
++	return 0;
++}
+ 
+ /*
+  * Device CLSA010(0/1) doesn't have _DSD so a gpiod_get by the label reset won't work.
+@@ -43,37 +334,6 @@ static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *phy
+ 	return 0;
+ }
+ 
+-/*
+- * Device 103C89C6 does have _DSD, however it is setup to use the wrong boost type.
+- * We can override the _DSD to correct the boost type here.
+- * Since this laptop has valid ACPI, we do not need to handle cs-gpios, since that already exists
+- * in the ACPI.
+- */
+-static int hp_vision_acpi_fix(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
+-			      const char *hid)
+-{
+-	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
+-
+-	dev_info(cs35l41->dev, "Adding DSD properties for %s\n", cs35l41->acpi_subsystem_id);
+-
+-	cs35l41->index = id;
+-	cs35l41->channel_index = 0;
+-	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 1, GPIOD_OUT_HIGH);
+-	cs35l41->speaker_id = -ENOENT;
+-	hw_cfg->spk_pos = cs35l41->index ? 1 : 0; // right:left
+-	hw_cfg->gpio1.func = CS35L41_NOT_USED;
+-	hw_cfg->gpio1.valid = true;
+-	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
+-	hw_cfg->gpio2.valid = true;
+-	hw_cfg->bst_type = CS35L41_INT_BOOST;
+-	hw_cfg->bst_ind = 1000;
+-	hw_cfg->bst_ipk = 4500;
+-	hw_cfg->bst_cap = 24;
+-	hw_cfg->valid = true;
+-
+-	return 0;
+-}
+-
+ struct cs35l41_prop_model {
+ 	const char *hid;
+ 	const char *ssid;
+@@ -84,7 +344,36 @@ struct cs35l41_prop_model {
+ static const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
+ 	{ "CLSA0100", NULL, lenovo_legion_no_acpi },
+ 	{ "CLSA0101", NULL, lenovo_legion_no_acpi },
+-	{ "CSC3551", "103C89C6", hp_vision_acpi_fix },
++	{ "CSC3551", "103C89C6", generic_dsd_config },
++	{ "CSC3551", "104312AF", generic_dsd_config },
++	{ "CSC3551", "10431433", generic_dsd_config },
++	{ "CSC3551", "10431463", generic_dsd_config },
++	{ "CSC3551", "10431473", generic_dsd_config },
++	{ "CSC3551", "10431483", generic_dsd_config },
++	{ "CSC3551", "10431493", generic_dsd_config },
++	{ "CSC3551", "104314D3", generic_dsd_config },
++	{ "CSC3551", "104314E3", generic_dsd_config },
++	{ "CSC3551", "10431503", generic_dsd_config },
++	{ "CSC3551", "10431533", generic_dsd_config },
++	{ "CSC3551", "10431573", generic_dsd_config },
++	{ "CSC3551", "10431663", generic_dsd_config },
++	{ "CSC3551", "104316D3", generic_dsd_config },
++	{ "CSC3551", "104316F3", generic_dsd_config },
++	{ "CSC3551", "104317F3", generic_dsd_config },
++	{ "CSC3551", "10431863", generic_dsd_config },
++	{ "CSC3551", "104318D3", generic_dsd_config },
++	{ "CSC3551", "10431C9F", generic_dsd_config },
++	{ "CSC3551", "10431CAF", generic_dsd_config },
++	{ "CSC3551", "10431CCF", generic_dsd_config },
++	{ "CSC3551", "10431CDF", generic_dsd_config },
++	{ "CSC3551", "10431CEF", generic_dsd_config },
++	{ "CSC3551", "10431D1F", generic_dsd_config },
++	{ "CSC3551", "10431DA2", generic_dsd_config },
++	{ "CSC3551", "10431E02", generic_dsd_config },
++	{ "CSC3551", "10431EE2", generic_dsd_config },
++	{ "CSC3551", "10431F12", generic_dsd_config },
++	{ "CSC3551", "10431F1F", generic_dsd_config },
++	{ "CSC3551", "10431F62", generic_dsd_config },
+ 	{}
+ };
+ 
+@@ -97,7 +386,7 @@ int cs35l41_add_dsd_properties(struct cs35l41_hda *cs35l41, struct device *physd
+ 		if (!strcmp(model->hid, hid) &&
+ 		    (!model->ssid ||
+ 		     (cs35l41->acpi_subsystem_id &&
+-		      !strcmp(model->ssid, cs35l41->acpi_subsystem_id))))
++		      !strcasecmp(model->ssid, cs35l41->acpi_subsystem_id))))
+ 			return model->add_prop(cs35l41, physdev, id, hid);
+ 	}
+ 
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 2590879f0a84..e5fdec1c4065 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9858,21 +9858,28 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
+-	SND_PCI_QUIRK(0x1043, 0x1433, "ASUS GX650P", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1463, "Asus GA402X", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1473, "ASUS GU604V", ALC285_FIXUP_ASUS_HEADSET_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1483, "ASUS GU603V", ALC285_FIXUP_ASUS_HEADSET_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1493, "ASUS GV601V", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1433, "ASUS GX650PY/PZ/PV/PU/PYV/PZV/PIV/PVV", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1463, "Asus GA402X/GA402N", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1473, "ASUS GU604VI/VC/VE/VG/VJ/VQ/VU/VV/VY/VZ", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1483, "ASUS GU603VQ/VU/VV/VJ/VI", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1493, "ASUS GV601VV/VU/VJ/VQ/VI", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x14d3, "ASUS G614JY/JZ/JG", ALC245_FIXUP_CS35L41_SPI_2),
++	SND_PCI_QUIRK(0x1043, 0x14e3, "ASUS G513PI/PU/PV", ALC287_FIXUP_CS35L41_I2C_2),
++	SND_PCI_QUIRK(0x1043, 0x1503, "ASUS G733PY/PZ/PZV/PYV", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
+-	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301V", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1533, "ASUS GV302XA/XJ/XQ/XU/XV/XI", ALC287_FIXUP_CS35L41_I2C_2),
++	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301VV/VQ/VU/VJ/VA/VC/VE/VVC/VQC/VUC/VJC/VEC/VCC", ALC285_FIXUP_ASUS_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1662, "ASUS GV301QH", ALC294_FIXUP_ASUS_DUAL_SPK),
+-	SND_PCI_QUIRK(0x1043, 0x1663, "ASUS GU603ZV", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1663, "ASUS GU603ZI/ZJ/ZQ/ZU/ZV", ALC285_FIXUP_ASUS_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1683, "ASUS UM3402YAR", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x16d3, "ASUS UX5304VA", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
++	SND_PCI_QUIRK(0x1043, 0x16f3, "ASUS UX7602VI/BZ", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
+ 	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
+-	SND_PCI_QUIRK(0x1043, 0x17f3, "ROG Ally RC71L_RC71L", ALC294_FIXUP_ASUS_ALLY),
++	SND_PCI_QUIRK(0x1043, 0x17f3, "ROG Ally NR2301L/X", ALC294_FIXUP_ASUS_ALLY),
++	SND_PCI_QUIRK(0x1043, 0x1863, "ASUS UX6404VI/VV", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x18d3, "ASUS UM3504DA", ALC294_FIXUP_CS35L41_I2C_2),
+@@ -9897,23 +9904,30 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x1c43, "ASUS UX8406MA", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1c62, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1c92, "ASUS ROG Strix G15", ALC285_FIXUP_ASUS_G533Z_PINS),
+-	SND_PCI_QUIRK(0x1043, 0x1c9f, "ASUS G614JI", ALC285_FIXUP_ASUS_HEADSET_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1caf, "ASUS G634JYR/JZR", ALC285_FIXUP_ASUS_SPI_REAR_SPEAKERS),
++	SND_PCI_QUIRK(0x1043, 0x1c9f, "ASUS G614JU/JV/JI", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1caf, "ASUS G634JY/JZ/JI/JG", ALC285_FIXUP_ASUS_SPI_REAR_SPEAKERS),
+ 	SND_PCI_QUIRK(0x1043, 0x1ccd, "ASUS X555UB", ALC256_FIXUP_ASUS_MIC),
+-	SND_PCI_QUIRK(0x1043, 0x1d1f, "ASUS ROG Strix G17 2023 (G713PV)", ALC287_FIXUP_CS35L41_I2C_2),
++	SND_PCI_QUIRK(0x1043, 0x1ccf, "ASUS G814JU/JV/JI", ALC245_FIXUP_CS35L41_SPI_2),
++	SND_PCI_QUIRK(0x1043, 0x1cdf, "ASUS G814JY/JZ/JG", ALC245_FIXUP_CS35L41_SPI_2),
++	SND_PCI_QUIRK(0x1043, 0x1cef, "ASUS G834JY/JZ/JI/JG", ALC285_FIXUP_ASUS_HEADSET_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1d1f, "ASUS G713PI/PU/PV/PVN", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1d42, "ASUS Zephyrus G14 2022", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1d4e, "ASUS TM420", ALC256_FIXUP_ASUS_HPE),
++	SND_PCI_QUIRK(0x1043, 0x1da2, "ASUS UP6502ZA/ZD", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1e02, "ASUS UX3402ZA", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x16a3, "ASUS UX3402VA", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1f62, "ASUS UX7602ZM", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1e11, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA502),
+-	SND_PCI_QUIRK(0x1043, 0x1e12, "ASUS UM3402", ALC287_FIXUP_CS35L41_I2C_2),
++	SND_PCI_QUIRK(0x1043, 0x1e12, "ASUS UM6702RA/RC", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1e51, "ASUS Zephyrus M15", ALC294_FIXUP_ASUS_GU502_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e5e, "ASUS ROG Strix G513", ALC294_FIXUP_ASUS_G513_PINS),
+ 	SND_PCI_QUIRK(0x1043, 0x1e8e, "ASUS Zephyrus G15", ALC289_FIXUP_ASUS_GA401),
++	SND_PCI_QUIRK(0x1043, 0x1ee2, "ASUS UM3402", ALC287_FIXUP_CS35L41_I2C_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1c52, "ASUS Zephyrus G15 2022", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x1f12, "ASUS UM5302", ALC287_FIXUP_CS35L41_I2C_2),
++	SND_PCI_QUIRK(0x1043, 0x1f1f, "ASUS H7604JI/JV/J3D", ALC245_FIXUP_CS35L41_SPI_2),
++	SND_PCI_QUIRK(0x1043, 0x1f62, "ASUS UX7602ZM", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1f92, "ASUS ROG Flow X16", ALC289_FIXUP_ASUS_GA401),
+ 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ 	SND_PCI_QUIRK(0x1043, 0x3a20, "ASUS G614JZR", ALC245_FIXUP_CS35L41_SPI_2),
