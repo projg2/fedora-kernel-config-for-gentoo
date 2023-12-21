@@ -38,8 +38,9 @@
  sound/pci/hda/cs35l41_hda.c                        | 106 +++++-
  sound/pci/hda/cs35l41_hda.h                        |   8 +-
  sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
+ sound/pci/hda/hda_component.h                      |   4 +
  sound/pci/hda/patch_realtek.c                      |  38 ++-
- 41 files changed, 1128 insertions(+), 241 deletions(-)
+ 42 files changed, 1132 insertions(+), 241 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 891ef640396c..9ecd654b31bf 100644
@@ -2184,6 +2185,28 @@ index b62a4e6968e2..c9eb70290973 100644
  			return model->add_prop(cs35l41, physdev, id, hid);
  	}
  
+diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
+index f170aec967c1..bbd6f0ed16c1 100644
+--- a/sound/pci/hda/hda_component.h
++++ b/sound/pci/hda/hda_component.h
+@@ -6,6 +6,7 @@
+  *                    Cirrus Logic International Semiconductor Ltd.
+  */
+ 
++#include <linux/acpi.h>
+ #include <linux/component.h>
+ 
+ #define HDA_MAX_COMPONENTS	4
+@@ -15,6 +16,9 @@ struct hda_component {
+ 	struct device *dev;
+ 	char name[HDA_MAX_NAME_SIZE];
+ 	struct hda_codec *codec;
++	struct acpi_device *adev;
++	bool acpi_notifications_supported;
++	void (*acpi_notify)(acpi_handle handle, u32 event, struct device *dev);
+ 	void (*pre_playback_hook)(struct device *dev, int action);
+ 	void (*playback_hook)(struct device *dev, int action);
+ 	void (*post_playback_hook)(struct device *dev, int action);
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
 index 2590879f0a84..e5fdec1c4065 100644
 --- a/sound/pci/hda/patch_realtek.c

@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/becca34be9cd8577a101032917438af982aa7d29
+ becca34be9cd8577a101032917438af982aa7d29 ALSA: hda: cs35l41: Add notification support into component binding
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/2fa4b6a18ce384be968eda55c9cb12a6bb5cb4ca
  2fa4b6a18ce384be968eda55c9cb12a6bb5cb4ca ALSA: hda: cs35l41: Support mute notifications for CS35L41 HDA
 

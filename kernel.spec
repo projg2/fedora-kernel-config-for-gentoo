@@ -3710,6 +3710,7 @@ fi\
 #
 %changelog
 * Wed Dec 20 2023 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.8-200]
+- ALSA: hda: cs35l41: Add notification support into component binding (Stefan Binding)
 - ALSA: hda: cs35l41: Support mute notifications for CS35L41 HDA (Stefan Binding)
 
 * Wed Dec 20 2023 Augusto Caringi <acaringi@redhat.com> [6.6.8-0]
