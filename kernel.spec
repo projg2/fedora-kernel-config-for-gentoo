@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc6.20231220git55cb5f43689d.50
+%define pkgrelease 0.rc6.20231221gita4aebe936554.51
 %define kversion 6
-%define tarfile_release 6.7-rc6-22-g55cb5f43689d
+%define tarfile_release 6.7-rc6-78-ga4aebe936554
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20231220git55cb5f43689d.50%{?buildid}%{?dist}
+%define specrelease 0.rc6.20231221gita4aebe936554.51%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -799,7 +799,7 @@ BuildRequires: tpm2-tools
 Source0: linux-%{tarfile_release}.tar.xz
 
 Source1: Makefile.rhelver
-
+Source2: kernel.changelog.xz
 
 # Name of the packaged file containing signing key
 %ifarch ppc64le
@@ -2918,6 +2918,7 @@ docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 # copy the source over
 mkdir -p $docdir
 tar -h -f - --exclude=man --exclude='.*' -c Documentation | tar xf - -C $docdir
+install -m644 %{SOURCE2} $docdir/
 
 # with_doc
 %endif
@@ -3455,6 +3456,7 @@ fi\
 %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation/*
 %dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation
 %dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
+%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/kernel.changelog.xz
 %endif
 
 %if %{with_perf}
@@ -3754,6 +3756,11 @@ fi\
 #
 #
 %changelog
+* Thu Dec 21 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.a4aebe936554.51]
+- redhat: ship all the changelog from source git into kernel-doc (Herton R. Krzesinski)
+- redhat: create an empty changelog file when changing its name (Herton R. Krzesinski)
+- Linux v6.7.0-0.rc6.a4aebe936554
+
 * Wed Dec 20 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.55cb5f43689d.50]
 - redhat/self-test: Remove --all from git query (Prarit Bhargava)
 - Linux v6.7.0-0.rc6.55cb5f43689d
