@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc6.20231222git24e0d2e527a3.52
+%define pkgrelease 0.rc7.54
 %define kversion 6
-%define tarfile_release 6.7-rc6-176-g24e0d2e527a3
+%define tarfile_release 6.7-rc7
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20231222git24e0d2e527a3.52%{?buildid}%{?dist}
+%define specrelease 0.rc7.54%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3756,6 +3756,12 @@ fi\
 #
 #
 %changelog
+* Sun Dec 24 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc7.54]
+- Linux v6.7.0-0.rc7
+
+* Sat Dec 23 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.5254c0cbc92d.53]
+- Linux v6.7.0-0.rc6.5254c0cbc92d
+
 * Fri Dec 22 2023 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc6.24e0d2e527a3.52]
 - fedora: a few cleanups and driver enablements (Peter Robinson)
 - fedora: arm64: cleanup Allwinner Pinctrl drivers (Peter Robinson)
