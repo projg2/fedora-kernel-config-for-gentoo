@@ -39,11 +39,11 @@
  sound/pci/hda/cs35l41_hda.h                        |   8 +-
  sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
  sound/pci/hda/hda_component.h                      |   4 +
- sound/pci/hda/patch_realtek.c                      |  38 ++-
- 42 files changed, 1132 insertions(+), 241 deletions(-)
+ sound/pci/hda/patch_realtek.c                      |  39 ++-
+ 42 files changed, 1132 insertions(+), 242 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 891ef640396c..9ecd654b31bf 100644
+index 4d1d5e925bb2..b585d9d29b14 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2208,10 +2208,10 @@ index f170aec967c1..bbd6f0ed16c1 100644
  	void (*playback_hook)(struct device *dev, int action);
  	void (*post_playback_hook)(struct device *dev, int action);
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 2590879f0a84..e5fdec1c4065 100644
+index 343732c062c7..e5fdec1c4065 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -9858,21 +9858,28 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9858,22 +9858,28 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
  	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
  	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
@@ -2229,6 +2229,7 @@ index 2590879f0a84..e5fdec1c4065 100644
 +	SND_PCI_QUIRK(0x1043, 0x14e3, "ASUS G513PI/PU/PV", ALC287_FIXUP_CS35L41_I2C_2),
 +	SND_PCI_QUIRK(0x1043, 0x1503, "ASUS G733PY/PZ/PZV/PYV", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
+-	SND_PCI_QUIRK(0x1043, 0x1533, "ASUS GV302XA", ALC287_FIXUP_CS35L41_I2C_2),
 -	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301V", ALC285_FIXUP_ASUS_HEADSET_MIC),
 +	SND_PCI_QUIRK(0x1043, 0x1533, "ASUS GV302XA/XJ/XQ/XU/XV/XI", ALC287_FIXUP_CS35L41_I2C_2),
 +	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301VV/VQ/VU/VJ/VA/VC/VE/VVC/VQC/VUC/VJC/VEC/VCC", ALC285_FIXUP_ASUS_HEADSET_MIC),
@@ -2248,7 +2249,7 @@ index 2590879f0a84..e5fdec1c4065 100644
  	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
  	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
  	SND_PCI_QUIRK(0x1043, 0x18d3, "ASUS UM3504DA", ALC294_FIXUP_CS35L41_I2C_2),
-@@ -9897,23 +9904,30 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9898,23 +9904,30 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x1043, 0x1c43, "ASUS UX8406MA", ALC245_FIXUP_CS35L41_SPI_2),
  	SND_PCI_QUIRK(0x1043, 0x1c62, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
  	SND_PCI_QUIRK(0x1043, 0x1c92, "ASUS ROG Strix G15", ALC285_FIXUP_ASUS_G533Z_PINS),
