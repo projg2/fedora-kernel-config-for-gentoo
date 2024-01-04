@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc8.61
+%define pkgrelease 0.rc8.20240104gitac865f00af29.64
 %define kversion 6
-%define tarfile_release 6.7-rc8
+%define tarfile_release 6.7-rc8-24-gac865f00af29
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.61%{?buildid}%{?dist}
+%define specrelease 0.rc8.20240104gitac865f00af29.64%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3352,7 +3352,7 @@ fi\
 
 %if %{with_up_base}
 %kernel_variant_preun
-%kernel_variant_post -r kernel-smp
+%kernel_variant_post
 %endif
 
 %if %{with_zfcpdump}
@@ -3412,7 +3412,7 @@ fi\
 
 %if %{with_realtime_base}
 %kernel_variant_preun -v rt
-%kernel_variant_post -v rt -r (kernel|kernel-smp)
+%kernel_variant_post -v rt -r kernel
 %kernel_kvm_post rt
 %endif
 
@@ -3757,7 +3757,13 @@ fi\
 #
 #
 %changelog
-* Mon Jan 01 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.0-0.rc8.61]
+* Thu Jan 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.ac865f00af29.64]
+- Linux v6.7.0-0.rc8.ac865f00af29
+
+* Wed Jan 03 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.63]
+- kernel.spec: remove kernel-smp reference from scripts (Jan Stancek)
+
+* Tue Jan 02 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.62]
 - redhat: do not compress the full kernel changelog in the src.rpm (Herton R. Krzesinski)
 
 * Mon Jan 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.61]
