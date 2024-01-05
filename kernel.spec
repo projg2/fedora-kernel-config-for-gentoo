@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.9
-%define specversion 6.6.9
+%define specrpmversion 6.6.10
+%define specversion 6.6.10
 %define patchversion 6.6
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.9
+%define tarfile_release 6.6.10
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.9
+%define kabiversion 6.6.10
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3709,6 +3709,9 @@ fi\
 #
 #
 %changelog
+* Fri Jan 05 2024 Augusto Caringi <acaringi@redhat.com> [6.6.10-0]
+- Linux v6.6.10
+
 * Mon Jan 01 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.6.9-0]
 - ALSA: hda: cs35l41: Add notification support into component binding (Stefan Binding)
 - ALSA: hda: cs35l41: Support mute notifications for CS35L41 HDA (Stefan Binding)
