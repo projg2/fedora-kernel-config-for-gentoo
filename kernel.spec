@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.7.0
 %define specversion 6.7.0
 %define patchversion 6.7
-%define pkgrelease 0.rc8.20240104gitac865f00af29.64
+%define pkgrelease 68
 %define kversion 6
-%define tarfile_release 6.7-rc8-24-gac865f00af29
+%define tarfile_release 6.7
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc8.20240104gitac865f00af29.64%{?buildid}%{?dist}
+%define specrelease 68%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.7.0
 
@@ -3757,6 +3757,24 @@ fi\
 #
 #
 %changelog
+* Mon Jan 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-68]
+- fedora: aarch64: enable SM_VIDEOCC_8350 (Peter Robinson)
+- Linux v6.7.0
+
+* Sun Jan 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.52b1853b080a.67]
+- Linux v6.7.0-0.rc8.52b1853b080a
+
+* Sat Jan 06 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.95c8a35f1c01.66]
+- fedora: arm64: enable ethernet on newer TI industrial (Peter Robinson)
+- fedora: arm64: Disable VIDEO_IMX_MEDIA (Peter Robinson)
+- fedora: use common config for Siemens Simatic IPC (Peter Robinson)
+- fedora: arm: enable Rockchip SPI flash (Peter Robinson)
+- fedora: arm64: enable DRM_TI_SN65DSI83 (Peter Robinson)
+- Linux v6.7.0-0.rc8.95c8a35f1c01
+
+* Fri Jan 05 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.1f874787ed9a.65]
+- Linux v6.7.0-0.rc8.1f874787ed9a
+
 * Thu Jan 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-0.rc8.ac865f00af29.64]
 - Linux v6.7.0-0.rc8.ac865f00af29
 
