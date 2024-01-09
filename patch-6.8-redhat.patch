@@ -181,7 +181,7 @@ index f8567e95f98b..24308bf7af51 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7b071a00425d..9d6fa47573e3 100644
+index b67e6934316f..5f0eebe42c0a 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1308,7 +1308,7 @@ endchoice
@@ -241,10 +241,10 @@ index 5701356f4f33..cf3593dc271e 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index b14fc8c1c953..b73ab08b5251 100644
+index 94bff381ef20..6f35fbfac51b 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1595,6 +1595,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1587,6 +1587,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -253,7 +253,7 @@ index b14fc8c1c953..b73ab08b5251 100644
  		cpu_parse_early_param();
  
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 1526747bedf2..2ad416d34b84 100644
+index ec2c21a1844e..20fb18e31a93 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -272,7 +272,7 @@ index 1526747bedf2..2ad416d34b84 100644
  
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -670,6 +672,49 @@ static void __init early_reserve_memory(void)
+@@ -668,6 +670,49 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
  
@@ -322,7 +322,7 @@ index 1526747bedf2..2ad416d34b84 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -903,6 +948,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -901,6 +946,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -336,7 +336,7 @@ index 1526747bedf2..2ad416d34b84 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1064,19 +1116,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1062,19 +1114,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -357,7 +357,7 @@ index 1526747bedf2..2ad416d34b84 100644
  
  	reserve_initrd();
  
-@@ -1191,6 +1231,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1189,6 +1229,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
  
@@ -813,7 +813,7 @@ index d6f14279684d..9bc53b1970ab 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 4a9c79391dee..4f23b5a702cb 100644
+index 456be28ba67c..6681b9c20b01 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -51,6 +51,7 @@
@@ -866,15 +866,15 @@ index 4a9c79391dee..4f23b5a702cb 100644
  #if IS_ENABLED(CONFIG_VMGENID)
  static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
  
-@@ -1366,6 +1388,7 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+@@ -1365,6 +1387,7 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+ {
  	struct iov_iter iter;
- 	struct iovec iov;
  	int ret;
 +	const struct random_extrng *rng;
  
  	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
  		return -EINVAL;
-@@ -1377,6 +1400,21 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+@@ -1376,6 +1399,21 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
  	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
  		return -EINVAL;
  
@@ -896,7 +896,7 @@ index 4a9c79391dee..4f23b5a702cb 100644
  	if (!crng_ready() && !(flags & GRND_INSECURE)) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -1397,6 +1435,12 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+@@ -1396,6 +1434,12 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
  	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
  }
  
@@ -909,7 +909,7 @@ index 4a9c79391dee..4f23b5a702cb 100644
  static ssize_t write_pool_user(struct iov_iter *iter)
  {
  	u8 block[BLAKE2S_BLOCK_SIZE];
-@@ -1538,7 +1582,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1536,7 +1580,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
  
@@ -968,7 +968,7 @@ index 4a9c79391dee..4f23b5a702cb 100644
  	.read_iter = random_read_iter,
  	.write_iter = random_write_iter,
  	.poll = random_poll,
-@@ -1551,6 +1646,7 @@ const struct file_operations random_fops = {
+@@ -1549,6 +1644,7 @@ const struct file_operations random_fops = {
  };
  
  const struct file_operations urandom_fops = {
@@ -976,7 +976,7 @@ index 4a9c79391dee..4f23b5a702cb 100644
  	.read_iter = urandom_read_iter,
  	.write_iter = random_write_iter,
  	.unlocked_ioctl = random_ioctl,
-@@ -1561,6 +1657,32 @@ const struct file_operations urandom_fops = {
+@@ -1559,6 +1655,32 @@ const struct file_operations urandom_fops = {
  	.splice_write = iter_file_splice_write,
  };
  
@@ -2210,7 +2210,7 @@ index 3789d6224513..8a3d155dcec8 100644
  }
  
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index c5fcf377ab1f..2130c0994728 100644
+index 0980845c8b8f..c77aad2a3636 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
 @@ -5619,6 +5619,17 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
@@ -2398,10 +2398,10 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index dea043bc1e38..e37dd7f39e9b 100644
+index 58a4c976c39b..ec7cab859414 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1615,6 +1615,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1617,6 +1617,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2409,7 +2409,7 @@ index dea043bc1e38..e37dd7f39e9b 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2670,6 +2671,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2672,6 +2673,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
@@ -3799,10 +3799,10 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index dcb3e7014f9b..8037be366b20 100644
+index 2a7fc7881cbc..d1635db2c324 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5230,6 +5230,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5224,6 +5224,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.0
-%define specversion 6.7.0
-%define patchversion 6.7
-%define pkgrelease 68
+%define specrpmversion 6.8.0
+%define specversion 6.8.0
+%define patchversion 6.8
+%define pkgrelease 0.rc0.20240109git9f8413c4a66f.1
 %define kversion 6
-%define tarfile_release 6.7
+%define tarfile_release 6.7-562-g9f8413c4a66f
 # This is needed to do merge window version magic
-%define patchlevel 7
+%define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 68%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240109git9f8413c4a66f.1%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.7.0
+%define kabiversion 6.8.0
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -696,7 +696,11 @@ BuildRequires: opencsd-devel >= 1.0.0
 BuildRequires: python3-docutils
 BuildRequires: gettext ncurses-devel
 BuildRequires: libcap-devel libcap-ng-devel
+# The following are rtla requirements
+BuildRequires: python3-docutils
+BuildRequires: libtraceevent-devel
 BuildRequires: libtracefs-devel
+
 %ifnarch s390x
 BuildRequires: pciutils-devel
 %endif
@@ -713,6 +717,9 @@ BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
 BuildRequires: clang llvm-devel fuse-devel
+%ifarch x86_64
+BuildRequires: lld
+%endif
 BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel
 BuildRequires: numactl-devel
 %endif
@@ -1171,13 +1178,14 @@ This package provides debug information for package %{package_name}-tools.
 %if 0%{gemini}
 Epoch: %{gemini}
 %endif
-Summary: RTLA: Real-Time Linux Analysis tools
+Summary: Real-Time Linux Analysis tools
+Requires: libtraceevent
+Requires: libtracefs
 %description -n rtla
-The rtla tool is a meta-tool that includes a set of commands that
-aims to analyze the real-time properties of Linux. But, instead of
-testing Linux as a black box, rtla leverages kernel tracing
-capabilities to provide precise information about the properties
-and root causes of unexpected results.
+The rtla meta-tool includes a set of commands that aims to analyze
+the real-time properties of Linux. Instead of testing Linux as a black box,
+rtla leverages kernel tracing capabilities to provide precise information
+about the properties and root causes of unexpected results.
 
 %package -n rv
 Summary: RV: Runtime Verification
@@ -1225,7 +1233,7 @@ This package provides debug information for the bpftool package.
 
 %package selftests-internal
 Summary: Kernel samples and selftests
-Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs
+Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs, keyutils
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -1234,6 +1242,8 @@ Kernel sample programs and selftests.
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+%define __requires_exclude ^liburandom_read.so.*$
 
 # with_selftests
 %endif
@@ -3757,6 +3767,36 @@ fi\
 #
 #
 %changelog
+* Tue Jan 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9f8413c4a66f.1]
+- Reset RHEL_RELEASE for 6.8 series (Justin M. Forbes)
+- common: cleanup MX3_IPU (Peter Robinson)
+- all: The Octeon MDIO driver is aarch64/mips (Peter Robinson)
+- common: rtc: remove bq4802 config (Peter Robinson)
+- common: de-dupe MARVELL_GTI_WDT (Peter Robinson)
+- all: Remove CAN_BXCAN (Peter Robinson)
+- common: cleanup SND_SOC_ROCKCHIP (Peter Robinson)
+- common: move RHEL DP83867_PHY to common (Peter Robinson)
+- common: Make ASYMMETRIC_KEY_TYPE enable explicit (Peter Robinson)
+- common: Disable aarch64 ARCH_MA35 universally (Peter Robinson)
+- common: arm64: enable Tegra234 pinctrl driver (Peter Robinson)
+- rhel: arm64: Enable qoriq thermal driver (Peter Robinson)
+- common: aarch64: Cleanup some i.MX8 config options (Peter Robinson)
+- all: EEPROM_LEGACY has been removed (Peter Robinson)
+- all: rmeove AppleTalk hardware configs (Peter Robinson)
+- all: cleanup: remove references to SLOB (Peter Robinson)
+- all: cleanup: Drop unnessary BRCMSTB configs (Peter Robinson)
+- all: net: remove retired network schedulers (Peter Robinson)
+- all: cleanup removed CONFIG_IMA_TRUSTED_KEYRING (Peter Robinson)
+- BuildRequires: lld for build with selftests for x86 (Jan Stancek)
+- spec: add keyutils to selftest-internal subpackage requirements (Artem Savkov) [2166911]
+- redhat/spec: exclude liburandom_read.so from requires (Artem Savkov) [2120968]
+- rtla: sync summary text with upstream and update Requires (Jan Stancek)
+- uki-virt: add systemd-sysext dracut module (Gerd Hoffmann)
+- uki-virt: add virtiofs dracut module (Gerd Hoffmann)
+- common: disable the FB device creation (Peter Robinson)
+- s390x: There's no FB on Z-series (Peter Robinson)
+- Linux v6.8.0-0.rc0.9f8413c4a66f
+
 * Mon Jan 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-68]
 - fedora: aarch64: enable SM_VIDEOCC_8350 (Peter Robinson)
 - Linux v6.7.0

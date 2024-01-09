@@ -1,3 +1,34 @@
+* Tue Jan 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9f8413c4a66f.1]
+- Reset RHEL_RELEASE for 6.8 series (Justin M. Forbes)
+- common: cleanup MX3_IPU (Peter Robinson)
+- all: The Octeon MDIO driver is aarch64/mips (Peter Robinson)
+- common: rtc: remove bq4802 config (Peter Robinson)
+- common: de-dupe MARVELL_GTI_WDT (Peter Robinson)
+- all: Remove CAN_BXCAN (Peter Robinson)
+- common: cleanup SND_SOC_ROCKCHIP (Peter Robinson)
+- common: move RHEL DP83867_PHY to common (Peter Robinson)
+- common: Make ASYMMETRIC_KEY_TYPE enable explicit (Peter Robinson)
+- common: Disable aarch64 ARCH_MA35 universally (Peter Robinson)
+- common: arm64: enable Tegra234 pinctrl driver (Peter Robinson)
+- rhel: arm64: Enable qoriq thermal driver (Peter Robinson)
+- common: aarch64: Cleanup some i.MX8 config options (Peter Robinson)
+- all: EEPROM_LEGACY has been removed (Peter Robinson)
+- all: rmeove AppleTalk hardware configs (Peter Robinson)
+- all: cleanup: remove references to SLOB (Peter Robinson)
+- all: cleanup: Drop unnessary BRCMSTB configs (Peter Robinson)
+- all: net: remove retired network schedulers (Peter Robinson)
+- all: cleanup removed CONFIG_IMA_TRUSTED_KEYRING (Peter Robinson)
+- BuildRequires: lld for build with selftests for x86 (Jan Stancek)
+- spec: add keyutils to selftest-internal subpackage requirements (Artem Savkov) [2166911]
+- redhat/spec: exclude liburandom_read.so from requires (Artem Savkov) [2120968]
+- rtla: sync summary text with upstream and update Requires (Jan Stancek)
+- uki-virt: add systemd-sysext dracut module (Gerd Hoffmann)
+- uki-virt: add virtiofs dracut module (Gerd Hoffmann)
+- common: disable the FB device creation (Peter Robinson)
+- s390x: There's no FB on Z-series (Peter Robinson)
+- Linux v6.8.0-0.rc0.9f8413c4a66f
+Resolves:
+
 * Mon Jan 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-68]
 - fedora: aarch64: enable SM_VIDEOCC_8350 (Peter Robinson)
 - Linux v6.7.0
