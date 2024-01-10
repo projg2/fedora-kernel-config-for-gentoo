@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/164aa6967f19237381ce8c996e7dbf96f69c2d08
+ 164aa6967f19237381ce8c996e7dbf96f69c2d08 random: replace import_single_range() with import_ubuf()
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/5849a9a4a537c62e21134f359a56de1883ebd8f0
  5849a9a4a537c62e21134f359a56de1883ebd8f0 ext4: Mark mounting fs-verity filesystems as tech-preview
 

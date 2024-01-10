@@ -1,3 +1,17 @@
+* Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.4]
+- random: replace import_single_range() with import_ubuf() (Justin M. Forbes)
+Resolves: 
+
+* Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.3]
+- Flip CONFIG_INTEL_PMC_CORE to m for Fedora (Justin M. Forbes)
+- Add CONFIG_ZRAM_TRACK_ENTRY_ACTIME=y to avoid a mismatch (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.ab27740f7665
+Resolves: 
+
+* Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9f8413c4a66f.2]
+- Trim changelog after rebase (Justin M. Forbes)
+Resolves: 
+
 * Tue Jan 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9f8413c4a66f.1]
 - Reset RHEL_RELEASE for 6.8 series (Justin M. Forbes)
 - common: cleanup MX3_IPU (Peter Robinson)
@@ -27,7 +41,7 @@
 - common: disable the FB device creation (Peter Robinson)
 - s390x: There's no FB on Z-series (Peter Robinson)
 - Linux v6.8.0-0.rc0.9f8413c4a66f
-Resolves:
+Resolves: 
 
 * Mon Jan 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.7.0-68]
 - fedora: aarch64: enable SM_VIDEOCC_8350 (Peter Robinson)
