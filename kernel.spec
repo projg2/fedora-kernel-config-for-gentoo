@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240110gitab27740f7665.4
+%define pkgrelease 0.rc0.20240111gitde927f6c0b07.4
 %define kversion 6
-%define tarfile_release 6.7-1727-gab27740f7665
+%define tarfile_release 6.7-2723-gde927f6c0b07
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240110gitab27740f7665.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240111gitde927f6c0b07.4%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,8 +3767,10 @@ fi\
 #
 #
 %changelog
-* Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.4]
+* Thu Jan 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.de927f6c0b07.4]
+- Fix up ZRAM_TRACK_ENTRY_ACTIME in pending (Justin M. Forbes)
 - random: replace import_single_range() with import_ubuf() (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.de927f6c0b07
 
 * Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.3]
 - Flip CONFIG_INTEL_PMC_CORE to m for Fedora (Justin M. Forbes)

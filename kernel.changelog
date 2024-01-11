@@ -1,5 +1,7 @@
-* Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.4]
+* Thu Jan 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.de927f6c0b07.4]
+- Fix up ZRAM_TRACK_ENTRY_ACTIME in pending (Justin M. Forbes)
 - random: replace import_single_range() with import_ubuf() (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.de927f6c0b07
 Resolves: 
 
 * Wed Jan 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.ab27740f7665.3]

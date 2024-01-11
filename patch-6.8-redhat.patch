@@ -219,7 +219,7 @@ index ba75f6bee774..7d37ce1772f1 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 5701356f4f33..cf3593dc271e 100644
+index d1f3b56e7afc..eaefd0d7cfff 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -230,7 +230,7 @@ index 5701356f4f33..cf3593dc271e 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
  
-@@ -907,6 +908,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -891,6 +892,9 @@ void __init setup_arch(char **cmdline_p)
  
  	log_component_list();
  
@@ -367,10 +367,10 @@ index ec2c21a1844e..20fb18e31a93 100644
  }
  
 diff --git a/crypto/drbg.c b/crypto/drbg.c
-index e01f8c7769d0..febf071f0e59 100644
+index 3addce90930c..730b03de596a 100644
 --- a/crypto/drbg.c
 +++ b/crypto/drbg.c
-@@ -1510,13 +1510,14 @@ static int drbg_generate(struct drbg_state *drbg,
+@@ -1494,13 +1494,14 @@ static int drbg_generate(struct drbg_state *drbg,
   * Wrapper around drbg_generate which can pull arbitrary long strings
   * from the DRBG without hitting the maximum request limitation.
   *
@@ -387,7 +387,7 @@ index e01f8c7769d0..febf071f0e59 100644
  {
  	unsigned int len = 0;
  	unsigned int slice = 0;
-@@ -1526,6 +1527,8 @@ static int drbg_generate_long(struct drbg_state *drbg,
+@@ -1510,6 +1511,8 @@ static int drbg_generate_long(struct drbg_state *drbg,
  		slice = ((buflen - len) / drbg_max_request_bytes(drbg));
  		chunk = slice ? drbg_max_request_bytes(drbg) : (buflen - len);
  		mutex_lock(&drbg->drbg_mutex);
@@ -396,7 +396,7 @@ index e01f8c7769d0..febf071f0e59 100644
  		err = drbg_generate(drbg, buf + len, chunk, addtl);
  		mutex_unlock(&drbg->drbg_mutex);
  		if (0 > err)
-@@ -1952,6 +1955,7 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+@@ -1936,6 +1939,7 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
  	struct drbg_state *drbg = crypto_rng_ctx(tfm);
  	struct drbg_string *addtl = NULL;
  	struct drbg_string string;
@@ -404,7 +404,7 @@ index e01f8c7769d0..febf071f0e59 100644
  
  	if (slen) {
  		/* linked list variable is now local to allow modification */
-@@ -1959,7 +1963,15 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+@@ -1943,7 +1947,15 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
  		addtl = &string;
  	}
  
@@ -2169,10 +2169,10 @@ index 87480a6e6d93..0f0c5550bea6 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/afs/main.c b/fs/afs/main.c
-index 6425c81d07de..4b137eeeb1a9 100644
+index 1b3bd21c168a..9f9d70b60a1f 100644
 --- a/fs/afs/main.c
 +++ b/fs/afs/main.c
-@@ -199,6 +199,9 @@ static int __init afs_init(void)
+@@ -200,6 +200,9 @@ static int __init afs_init(void)
  		goto error_proc;
  	}
  
@@ -2183,10 +2183,10 @@ index 6425c81d07de..4b137eeeb1a9 100644
  
  error_proc:
 diff --git a/fs/erofs/super.c b/fs/erofs/super.c
-index 3789d6224513..8a3d155dcec8 100644
+index 5f60f163bd56..6352c3cf4c3c 100644
 --- a/fs/erofs/super.c
 +++ b/fs/erofs/super.c
-@@ -585,6 +585,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+@@ -591,6 +591,9 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
  	struct inode *inode;
  	struct erofs_sb_info *sbi;
  	struct erofs_fs_context *ctx = fc->fs_private;
@@ -2196,7 +2196,7 @@ index 3789d6224513..8a3d155dcec8 100644
  	int err;
  
  	sb->s_magic = EROFS_SUPER_MAGIC;
-@@ -703,6 +706,12 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
+@@ -709,6 +712,12 @@ static int erofs_fc_fill_super(struct super_block *sb, struct fs_context *fc)
  		return err;
  
  	erofs_info(sb, "mounted with root inode @ nid %llu.", sbi->root_nid);
@@ -2210,10 +2210,10 @@ index 3789d6224513..8a3d155dcec8 100644
  }
  
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index 0980845c8b8f..c77aad2a3636 100644
+index dcba0f85dfe2..f5201dbb73a6 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -5619,6 +5619,17 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
+@@ -5610,6 +5610,17 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
  	atomic_set(&sbi->s_warning_count, 0);
  	atomic_set(&sbi->s_msg_count, 0);
  
@@ -2348,7 +2348,7 @@ index 185924c56378..8b4b5b42946a 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 9cd0009bd050..f7565c54c22f 100644
+index 96bc462872c0..910919c76fac 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -418,6 +418,7 @@ struct module {
@@ -3018,7 +3018,7 @@ index e24b0780fdff..e4e1a6ea60ad 100644
  		if (!strcmp(fn_name, entry->buf)) {
  			pr_debug("initcall %s blacklisted\n", fn_name);
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 3947122d618b..5b9462a450a1 100644
+index ce105a5558fc..2c2c468fbf91 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
 @@ -12,6 +12,7 @@ obj-y     = fork.o exec_domain.o panic.o \
