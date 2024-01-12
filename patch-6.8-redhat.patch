@@ -1,6 +1,6 @@
  Documentation/admin-guide/kernel-parameters.txt    |   9 +
  Kconfig                                            |   2 +
- Kconfig.redhat                                     |  17 +
+ Kconfig.redhat                                     |  26 +
  Makefile                                           |  20 +-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
@@ -54,7 +54,7 @@
  include/linux/panic.h                              |  18 +-
  include/linux/pci.h                                |   5 +
  include/linux/random.h                             |  10 +
- include/linux/rh_kabi.h                            | 515 +++++++++++++++++++++
+ include/linux/rh_kabi.h                            | 541 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   4 +
  init/main.c                                        |   3 +
@@ -63,7 +63,7 @@
  kernel/module/main.c                               |   7 +
  kernel/module/signing.c                            |   9 +-
  kernel/panic.c                                     |  13 +
- kernel/rh_messages.c                               | 414 +++++++++++++++++
+ kernel/rh_messages.c                               | 414 ++++++++++++++++
  kernel/rh_messages.h                               | 109 +++++
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
@@ -71,13 +71,13 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 73 files changed, 2079 insertions(+), 207 deletions(-)
+ 73 files changed, 2114 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index e0891ac76ab3..6ab7bdfb8872 100644
+index 505af40e97bc..4963357b97c1 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6809,6 +6809,15 @@
+@@ -6820,6 +6820,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -105,10 +105,10 @@ index 745bc773f567..f57ff40109d7 100644
 +source "Kconfig.redhat"
 diff --git a/Kconfig.redhat b/Kconfig.redhat
 new file mode 100644
-index 000000000000..effb81d04bfd
+index 000000000000..7465c78a90e6
 --- /dev/null
 +++ b/Kconfig.redhat
-@@ -0,0 +1,17 @@
+@@ -0,0 +1,26 @@
 +# SPDX-License-Identifier: GPL-2.0-only
 +#
 +# Red Hat specific options
@@ -124,6 +124,15 @@ index 000000000000..effb81d04bfd
 +	  longer supported.
 +
 +	  Unless you want a restricted kernel, say N here.
++
++config RH_KABI_SIZE_ALIGN_CHECKS
++	bool "Enables more stringent kabi checks in the macros"
++	depends on RHEL_DIFFERENCES
++	default y
++	help
++	  This option enables more stringent kabi checks. Those must
++	  be disabled in case of a debug build, because debug builds
++	  allow to change struct sizes.
 +
 +endmenu
 diff --git a/Makefile b/Makefile
@@ -165,10 +174,10 @@ index f1b2fd977275..509357de9a42 100644
  
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index b2ab8db63c4b..1799c20edee3 100644
+index b67d05468251..85efa68adfab 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1308,9 +1308,9 @@ config HIGHMEM
+@@ -1220,9 +1220,9 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE
@@ -703,10 +712,10 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 18af5064d268..9e6d52a655f3 100644
+index 0ba008773b00..2800ab127c65 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1758,6 +1758,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -1673,10 +1682,10 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 60f14019f981..6f566e06c307 100644
+index 0af612387083..b61fd0e890f4 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+@@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
  
  static blk_status_t nvme_error_status(u16 status)
  {
@@ -1686,7 +1695,7 @@ index 60f14019f981..6f566e06c307 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -341,6 +344,7 @@ enum nvme_disposition {
+@@ -342,6 +345,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1694,7 +1703,7 @@ index 60f14019f981..6f566e06c307 100644
  	AUTHENTICATE,
  };
  
-@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -353,15 +357,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
  		return AUTHENTICATE;
  
@@ -1714,7 +1723,7 @@ index 60f14019f981..6f566e06c307 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -394,6 +399,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
  
@@ -1729,7 +1738,7 @@ index 60f14019f981..6f566e06c307 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
+@@ -423,6 +436,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1740,7 +1749,7 @@ index 60f14019f981..6f566e06c307 100644
  #ifdef CONFIG_NVME_HOST_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 0a88d7bdc5e3..967bb3a85889 100644
+index 2dd4137a08b2..9b14eb637003 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1787,10 +1796,10 @@ index 0a88d7bdc5e3..967bb3a85889 100644
  
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index e7411dac00f7..d372f8b2336d 100644
+index 4be7f6822966..d9942df8f443 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -897,6 +897,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -903,6 +903,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1798,7 +1807,7 @@ index e7411dac00f7..d372f8b2336d 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -935,6 +936,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -941,6 +942,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1834,10 +1843,10 @@ index 51ec9e7e784f..8c3713edc7a6 100644
  	if (!rc)
  		return rc;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index ea476252280a..d81cc740aad8 100644
+index d208047d1b8f..966e0c0f6dc4 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4410,6 +4410,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4423,6 +4423,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -2040,10 +2049,10 @@ index 3d4f13da1ae8..7fdf37db9969 100644
  	/* Fusion */
  	{PCI_DEVICE(PCI_VENDOR_ID_LSI_LOGIC, PCI_DEVICE_ID_LSI_PLASMA)},
 diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-index 605013d3ee83..59d7ac663316 100644
+index 51b5788da040..821f2a66df47 100644
 --- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
 +++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
-@@ -12617,6 +12617,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
+@@ -12599,6 +12599,7 @@ bool scsih_ncq_prio_supp(struct scsi_device *sdev)
   * The pci device ids are defined in mpi/mpi2_cnfg.h.
   */
  static const struct pci_device_id mpt3sas_pci_table[] = {
@@ -2051,7 +2060,7 @@ index 605013d3ee83..59d7ac663316 100644
  	/* Spitfire ~ 2004 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2004,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12635,6 +12636,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12617,6 +12618,7 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2116_2,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2059,7 +2068,7 @@ index 605013d3ee83..59d7ac663316 100644
  	/* Thunderbolt ~ 2208 */
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SAS2208_1,
  		PCI_ANY_ID, PCI_ANY_ID },
-@@ -12659,9 +12661,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
+@@ -12641,9 +12643,11 @@ static const struct pci_device_id mpt3sas_pci_table[] = {
  		PCI_ANY_ID, PCI_ANY_ID },
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI2_MFGPAGE_DEVID_SWITCH_MPI_EP_1,
  		PCI_ANY_ID, PCI_ANY_ID },
@@ -2123,7 +2132,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 542a4bbb21bc..62161ceed2e2 100644
+index 0833b3e6aa6e..104f819ce813 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -2141,7 +2150,7 @@ index 542a4bbb21bc..62161ceed2e2 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4048,6 +4056,8 @@ static int __init init_sd(void)
+@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -2450,10 +2459,10 @@ index b0a940af4fff..8a52424fd0d5 100644
  #endif
 diff --git a/include/linux/rh_kabi.h b/include/linux/rh_kabi.h
 new file mode 100644
-index 000000000000..c7b42c1f1681
+index 000000000000..5139cb2cabdc
 --- /dev/null
 +++ b/include/linux/rh_kabi.h
-@@ -0,0 +1,515 @@
+@@ -0,0 +1,541 @@
 +/*
 + * rh_kabi.h - Red Hat kABI abstraction header
 + *
@@ -2762,6 +2771,23 @@ index 000000000000..c7b42c1f1681
 + *   of the size is not allowed and would constitute a silent kABI breakage.
 + *   Beware that the RH_KABI_EXCLUDE macro does not do any size checks.
 + *
++ * RH_KABI_EXCLUDE_WITH_SIZE
++ *   Like RH_KABI_EXCLUDE, this macro excludes the element from
++ *   checksum generation.  The same warnings as for RH_KABI_EXCLUDE
++ *   apply: use RH_KABI_FORCE_CHANGE.
++ *
++ *   This macro is intended to be used for elements embedded inside
++ *   kABI-protected structures (struct, array). In contrast with
++ *   RH_KABI_EXCLUDE, this macro reserves extra space, so that the
++ *   embedded element can grow without changing the offsets of the
++ *   fields that follow. The provided 'size' is the total space to be
++ *   added in longs (i.e. it's 8 * 'size' bytes), including the size
++ *   of the added element.  It is automatically checked that the new
++ *   element does not overflow the reserved space, now nor in the
++ *   future. The size is also included in the checksum via the
++ *   reserved space, to ensure that we don't accidentally change it,
++ *   which would change the offsets of the fields that follow.
++ *
 + * RH_KABI_BROKEN_INSERT
 + * RH_KABI_BROKEN_REMOVE
 + *   Insert a field to the middle of a struct / delete a field from a struct.
@@ -2833,6 +2859,8 @@ index 000000000000..c7b42c1f1681
 +# define _RH_KABI_REPLACE(_orig, _new)		_orig
 +# define _RH_KABI_EXCLUDE(_elem)
 +
++# define __RH_KABI_CHECK_SIZE(_item, _size)
++
 +#else
 +
 +# define RH_KABI_ALIGN_WARNING ".  Disable CONFIG_RH_KABI_SIZE_ALIGN_CHECKS if debugging."
@@ -2864,7 +2892,7 @@ index 000000000000..c7b42c1f1681
 +	}
 +# define __RH_KABI_CHECK_SIZE(_item, _size)				\
 +	_Static_assert(sizeof(struct{_item;}) <= _size,			\
-+		       __FILE__ ":" __stringify(__LINE__) ": " __stringify(_item) " is larger than the reserved size (" __stringify(_size) " bytes)" RH_KABI_ALIGN_WARNING)
++		       __FILE__ ":" __stringify(__LINE__) ": " __stringify(_item) " is larger than the reserved size (" __stringify(_size) " bytes)" RH_KABI_ALIGN_WARNING);
 +#else
 +# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
 +# define __RH_KABI_CHECK_SIZE(_item, _size)
@@ -2933,11 +2961,18 @@ index 000000000000..c7b42c1f1681
 +
 +#define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
 +
++#define RH_KABI_EXCLUDE_WITH_SIZE(_new, _size)				\
++	union {								\
++		RH_KABI_EXCLUDE(_new)					\
++		unsigned long RH_KABI_UNIQUE_ID[_size];			\
++		__RH_KABI_CHECK_SIZE(_new, 8 * (_size))			\
++	};
++
 +#define RH_KABI_EXTEND_WITH_SIZE(_new, _size)				\
 +	RH_KABI_EXTEND(union {						\
 +		_new;							\
 +		unsigned long RH_KABI_UNIQUE_ID[_size];			\
-+		__RH_KABI_CHECK_SIZE(_new, 8 * (_size));		\
++		__RH_KABI_CHECK_SIZE(_new, 8 * (_size))			\
 +	})
 +
 +#define _RH_KABI_AUX_PTR(_struct)					\
@@ -3030,7 +3065,7 @@ index ce105a5558fc..2c2c468fbf91 100644
  obj-$(CONFIG_MULTIUSER) += groups.o
  obj-$(CONFIG_VHOST_TASK) += vhost_task.o
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 0ed286b8a0f0..0d2998ca063e 100644
+index a1f18681721c..22dbfd6ec0e1 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
 @@ -26,6 +26,7 @@
@@ -3065,7 +3100,7 @@ index 0ed286b8a0f0..0d2998ca063e 100644
  int sysctl_unprivileged_bpf_disabled __read_mostly =
  	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
  
-@@ -5702,6 +5720,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
+@@ -5776,6 +5794,11 @@ static int bpf_unpriv_handler(struct ctl_table *table, int write,
  	if (write && !ret) {
  		if (locked_state && unpriv_enable != 1)
  			return -EPERM;

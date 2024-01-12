@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f71d8eae8c6d07e0239e34c7fcb92aee856b85e7
+ f71d8eae8c6d07e0239e34c7fcb92aee856b85e7 redhat: kABI: add missing RH_KABI_SIZE_ALIGN_CHECKS Kconfig option
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7c30fc841f008e6f2ba51f8fa4f76204d5e0248e
+ 7c30fc841f008e6f2ba51f8fa4f76204d5e0248e redhat: rh_kabi: introduce RH_KABI_EXCLUDE_WITH_SIZE
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/726ea4c60b3afb7995197d9cf6fc39630ddb845d
+ 726ea4c60b3afb7995197d9cf6fc39630ddb845d redhat: rh_kabi: move semicolon inside __RH_KABI_CHECK_SIZE
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b233f5decbfb5e1c89d5e17c280bef9806cded47
  b233f5decbfb5e1c89d5e17c280bef9806cded47 random: replace import_single_range() with import_ubuf()
 

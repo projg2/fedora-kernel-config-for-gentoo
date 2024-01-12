@@ -1,3 +1,10 @@
+* Fri Jan 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.70d201a40823.5]
+- redhat: kABI: add missing RH_KABI_SIZE_ALIGN_CHECKS Kconfig option (Sabrina Dubroca)
+- redhat: rh_kabi: introduce RH_KABI_EXCLUDE_WITH_SIZE (Sabrina Dubroca)
+- redhat: rh_kabi: move semicolon inside __RH_KABI_CHECK_SIZE (Sabrina Dubroca)
+- Linux v6.8.0-0.rc0.70d201a40823
+Resolves: 
+
 * Thu Jan 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.de927f6c0b07.4]
 - Fix up ZRAM_TRACK_ENTRY_ACTIME in pending (Justin M. Forbes)
 - random: replace import_single_range() with import_ubuf() (Justin M. Forbes)

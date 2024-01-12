@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240111gitde927f6c0b07.4
+%define pkgrelease 0.rc0.20240112git70d201a40823.5
 %define kversion 6
-%define tarfile_release 6.7-2723-gde927f6c0b07
+%define tarfile_release 6.7-6264-g70d201a40823
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240111gitde927f6c0b07.4%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240112git70d201a40823.5%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -1202,7 +1202,7 @@ analysing the logical and timing behavior of Linux.
 
 %if %{with_bpftool}
 
-%define bpftoolversion 7.3.0
+%define bpftoolversion 7.4.0
 
 %package -n bpftool
 Summary: Inspection and simple manipulation of eBPF programs and maps
@@ -3767,6 +3767,12 @@ fi\
 #
 #
 %changelog
+* Fri Jan 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.70d201a40823.5]
+- redhat: kABI: add missing RH_KABI_SIZE_ALIGN_CHECKS Kconfig option (Sabrina Dubroca)
+- redhat: rh_kabi: introduce RH_KABI_EXCLUDE_WITH_SIZE (Sabrina Dubroca)
+- redhat: rh_kabi: move semicolon inside __RH_KABI_CHECK_SIZE (Sabrina Dubroca)
+- Linux v6.8.0-0.rc0.70d201a40823
+
 * Thu Jan 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.de927f6c0b07.4]
 - Fix up ZRAM_TRACK_ENTRY_ACTIME in pending (Justin M. Forbes)
 - random: replace import_single_range() with import_ubuf() (Justin M. Forbes)
