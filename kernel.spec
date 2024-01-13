@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240112git70d201a40823.5
+%define pkgrelease 0.rc0.20240113git052d534373b7.7
 %define kversion 6
-%define tarfile_release 6.7-6264-g70d201a40823
+%define tarfile_release 6.7-9928-g052d534373b7
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240112git70d201a40823.5%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240113git052d534373b7.7%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,6 +3767,12 @@ fi\
 #
 #
 %changelog
+* Sat Jan 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
+- Add python3-pyyaml to buildreqs for kernel-docs (Justin M. Forbes)
+
+* Sat Jan 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.6]
+- Linux v6.8.0-0.rc0.052d534373b7
+
 * Fri Jan 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.70d201a40823.5]
 - redhat: kABI: add missing RH_KABI_SIZE_ALIGN_CHECKS Kconfig option (Sabrina Dubroca)
 - redhat: rh_kabi: introduce RH_KABI_EXCLUDE_WITH_SIZE (Sabrina Dubroca)
