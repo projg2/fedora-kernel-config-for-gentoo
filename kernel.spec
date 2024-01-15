@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240113git052d534373b7.7
+%define pkgrelease 0.rc0.20240113git052d534373b7.6
 %define kversion 6
 %define tarfile_release 6.7-9928-g052d534373b7
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240113git052d534373b7.7%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240113git052d534373b7.6%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,8 +3767,12 @@ fi\
 #
 #
 %changelog
-* Sat Jan 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
+* Mon Jan 15 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.0-0.rc0.20240113git052d534373b7.6]
 - Add python3-pyyaml to buildreqs for kernel-docs (Justin M. Forbes)
+- Add nb7vpq904m to singlemods for ppc64le (Thorsten Leemhuis)
+- include drm bridge helpers in kernel-core package (Thorsten Leemhuis)
+- Add dell-smm-hwmon to singlemods (Thorsten Leemhuis)
+- Add drm_gem_shmem_test to mod-internal.list (Thorsten Leemhuis)
 
 * Sat Jan 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.6]
 - Linux v6.8.0-0.rc0.052d534373b7
