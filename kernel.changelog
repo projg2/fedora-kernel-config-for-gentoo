@@ -1,3 +1,17 @@
+* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.8]
+- redhat: filter-modules.sh.rhel: add dell-smm-hwmon (Scott Weaver)
+Resolves: 
+
+* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
+- Add CONFIG_INTEL_MEI_GSC_PROXY=m for DRM 9.4 stable backport (Mika Penttilä)
+- Set configs for ZRAM_TRACK_ENTRY_ACTIME (Justin M. Forbes)
+- Add python3-pyyaml to buildreqs for kernel-docs (Justin M. Forbes)
+- Add nb7vpq904m to singlemods for ppc64le (Thorsten Leemhuis)
+- include drm bridge helpers in kernel-core package (Thorsten Leemhuis)
+- Add dell-smm-hwmon to singlemods (Thorsten Leemhuis)
+- Add drm_gem_shmem_test to mod-internal.list (Thorsten Leemhuis)
+Resolves: 
+
 * Sat Jan 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.6]
 - Linux v6.8.0-0.rc0.052d534373b7
 Resolves: 

@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240113git052d534373b7.6
+%define pkgrelease 0.rc0.20240116git052d534373b7.8
 %define kversion 6
 %define tarfile_release 6.7-9928-g052d534373b7
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240113git052d534373b7.6%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240116git052d534373b7.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,7 +3767,12 @@ fi\
 #
 #
 %changelog
-* Mon Jan 15 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.0-0.rc0.20240113git052d534373b7.6]
+* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.8]
+- redhat: filter-modules.sh.rhel: add dell-smm-hwmon (Scott Weaver)
+
+* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
+- Add CONFIG_INTEL_MEI_GSC_PROXY=m for DRM 9.4 stable backport (Mika Penttilä)
+- Set configs for ZRAM_TRACK_ENTRY_ACTIME (Justin M. Forbes)
 - Add python3-pyyaml to buildreqs for kernel-docs (Justin M. Forbes)
 - Add nb7vpq904m to singlemods for ppc64le (Thorsten Leemhuis)
 - include drm bridge helpers in kernel-core package (Thorsten Leemhuis)
