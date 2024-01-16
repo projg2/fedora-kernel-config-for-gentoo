@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.11
-%define specversion 6.6.11
+%define specrpmversion 6.6.12
+%define specversion 6.6.12
 %define patchversion 6.6
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.6.11
+%define tarfile_release 6.6.12
 # This is needed to do merge window version magic
 %define patchlevel 6
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.6.11
+%define kabiversion 6.6.12
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3709,6 +3709,12 @@ fi\
 #
 #
 %changelog
+* Mon Jan 15 2024 Augusto Caringi <acaringi@redhat.com> [6.6.12-0]
+- Add CVE Fixes to BugsFixed for 6.6.12 (Justin M. Forbes)
+- ida: Fix crash in ida_free when the bitmap is empty (Matthew Wilcox (Oracle))
+- wifi: ath10k: fix NULL pointer dereference in ath10k_wmi_tlv_op_pull_mgmt_tx_compl_ev() (Xingyuan Mo)
+- Linux v6.6.12
+
 * Wed Jan 10 2024 Augusto Caringi <acaringi@redhat.com> [6.6.11-0]
 - Linux v6.6.11
 

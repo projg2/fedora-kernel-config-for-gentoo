@@ -17,6 +17,7 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
  drivers/iommu/iommu.c                              |  22 ++
+ drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
  drivers/pci/quirks.c                               |  24 ++
  drivers/rtc/rtc-cmos.c                             |  18 +-
  drivers/scsi/sd.c                                  |  10 +
@@ -29,6 +30,8 @@
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
+ lib/idr.c                                          |   2 +-
+ lib/test_ida.c                                     |  40 +++
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -40,10 +43,10 @@
  sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
  sound/pci/hda/hda_component.h                      |   4 +
  sound/pci/hda/patch_realtek.c                      |  39 ++-
- 42 files changed, 1132 insertions(+), 242 deletions(-)
+ 45 files changed, 1177 insertions(+), 243 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 43edafa7f262..e8455933ff74 100644
+index a05c69afc045..4adac135cb4d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -968,6 +971,21 @@ index 3a67e636287a..eb5e796277d6 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+index 6b6aa3c36744..0ce08e9a0a3d 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
++++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+@@ -851,6 +851,10 @@ ath10k_wmi_tlv_op_pull_mgmt_tx_compl_ev(struct ath10k *ar, struct sk_buff *skb,
+ 	}
+ 
+ 	ev = tb[WMI_TLV_TAG_STRUCT_MGMT_TX_COMPL_EVENT];
++	if (!ev) {
++		kfree(tb);
++		return -EPROTO;
++	}
+ 
+ 	arg->desc_id = ev->desc_id;
+ 	arg->status = ev->status;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index ae95d0950772..459f2b50d422 100644
 --- a/drivers/pci/quirks.c
@@ -1433,6 +1451,77 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/lib/idr.c b/lib/idr.c
+index 13f2758c2377..da36054c3ca0 100644
+--- a/lib/idr.c
++++ b/lib/idr.c
+@@ -508,7 +508,7 @@ void ida_free(struct ida *ida, unsigned int id)
+ 			goto delete;
+ 		xas_store(&xas, xa_mk_value(v));
+ 	} else {
+-		if (!test_bit(bit, bitmap->bitmap))
++		if (!bitmap || !test_bit(bit, bitmap->bitmap))
+ 			goto err;
+ 		__clear_bit(bit, bitmap->bitmap);
+ 		xas_set_mark(&xas, XA_FREE_MARK);
+diff --git a/lib/test_ida.c b/lib/test_ida.c
+index b06880625961..55105baa19da 100644
+--- a/lib/test_ida.c
++++ b/lib/test_ida.c
+@@ -150,6 +150,45 @@ static void ida_check_conv(struct ida *ida)
+ 	IDA_BUG_ON(ida, !ida_is_empty(ida));
+ }
+ 
++/*
++ * Check various situations where we attempt to free an ID we don't own.
++ */
++static void ida_check_bad_free(struct ida *ida)
++{
++	unsigned long i;
++
++	printk("vvv Ignore \"not allocated\" warnings\n");
++	/* IDA is empty; all of these will fail */
++	ida_free(ida, 0);
++	for (i = 0; i < 31; i++)
++		ida_free(ida, 1 << i);
++
++	/* IDA contains a single value entry */
++	IDA_BUG_ON(ida, ida_alloc_min(ida, 3, GFP_KERNEL) != 3);
++	ida_free(ida, 0);
++	for (i = 0; i < 31; i++)
++		ida_free(ida, 1 << i);
++
++	/* IDA contains a single bitmap */
++	IDA_BUG_ON(ida, ida_alloc_min(ida, 1023, GFP_KERNEL) != 1023);
++	ida_free(ida, 0);
++	for (i = 0; i < 31; i++)
++		ida_free(ida, 1 << i);
++
++	/* IDA contains a tree */
++	IDA_BUG_ON(ida, ida_alloc_min(ida, (1 << 20) - 1, GFP_KERNEL) != (1 << 20) - 1);
++	ida_free(ida, 0);
++	for (i = 0; i < 31; i++)
++		ida_free(ida, 1 << i);
++	printk("^^^ \"not allocated\" warnings over\n");
++
++	ida_free(ida, 3);
++	ida_free(ida, 1023);
++	ida_free(ida, (1 << 20) - 1);
++
++	IDA_BUG_ON(ida, !ida_is_empty(ida));
++}
++
+ static DEFINE_IDA(ida);
+ 
+ static int ida_checks(void)
+@@ -162,6 +201,7 @@ static int ida_checks(void)
+ 	ida_check_leaf(&ida, 1024 * 64);
+ 	ida_check_max(&ida);
+ 	ida_check_conv(&ida);
++	ida_check_bad_free(&ida);
+ 
+ 	printk("IDA: %u of %u tests passed\n", tests_passed, tests_run);
+ 	return (tests_run != tests_passed) ? 0 : -EINVAL;
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index ac4ef3e206bb..80ede130812c 100644
 --- a/scripts/mod/modpost.c
