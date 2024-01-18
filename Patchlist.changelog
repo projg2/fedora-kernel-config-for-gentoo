@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/00b18a7e395433017c0eabdd14a7c3db2c6d4d9a
+ 00b18a7e395433017c0eabdd14a7c3db2c6d4d9a Fix up manual merge error in security.h
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/f71d8eae8c6d07e0239e34c7fcb92aee856b85e7
  f71d8eae8c6d07e0239e34c7fcb92aee856b85e7 redhat: kABI: add missing RH_KABI_SIZE_ALIGN_CHECKS Kconfig option
 

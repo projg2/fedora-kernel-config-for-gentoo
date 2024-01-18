@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240116git052d534373b7.8
+%define pkgrelease 0.rc0.20240118git296455ade1fd.8
 %define kversion 6
-%define tarfile_release 6.7-9928-g052d534373b7
+%define tarfile_release 6.7-11091-g296455ade1fd
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240116git052d534373b7.8%{?buildid}%{?dist}
+%define specrelease 0.rc0.20240118git296455ade1fd.8%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,8 +3767,13 @@ fi\
 #
 #
 %changelog
-* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.8]
+* Thu Jan 18 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.296455ade1fd.8]
+- Turn on IAA_CRYPTO_STATS for Fedora (Justin M. Forbes)
+- Fix up manual merge error in security.h (Justin M. Forbes)
+- fedora: new drivers and cleanups (Peter Robinson)
+- Turn on Renesas RZ for Fedora IOT rhbz2257913 (Justin M. Forbes)
 - redhat: filter-modules.sh.rhel: add dell-smm-hwmon (Scott Weaver)
+- Linux v6.8.0-0.rc0.296455ade1fd
 
 * Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
 - Add CONFIG_INTEL_MEI_GSC_PROXY=m for DRM 9.4 stable backport (Mika Penttilä)

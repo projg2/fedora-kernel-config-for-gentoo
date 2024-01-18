@@ -74,7 +74,7 @@
  73 files changed, 2115 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 6ee0f9a5da70..daf2f964e431 100644
+index a36cf8cc582c..6153c957fa37 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
 @@ -6826,6 +6826,15 @@
@@ -174,10 +174,10 @@ index f1b2fd977275..509357de9a42 100644
  
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index b67d05468251..85efa68adfab 100644
+index 0af6709570d1..54a8093d2dd3 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1220,9 +1220,9 @@ config HIGHMEM
+@@ -1221,9 +1221,9 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE
@@ -1322,7 +1322,7 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 34aee59dd147..7c5a7f7c11bd 100644
+index ce1995a2827f..57f9e9de4747 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -10,6 +10,7 @@
@@ -1333,7 +1333,7 @@ index 34aee59dd147..7c5a7f7c11bd 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2303,6 +2304,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2343,6 +2344,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
  
@@ -1350,7 +1350,7 @@ index 34aee59dd147..7c5a7f7c11bd 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
  
  static struct amba_driver etm4x_amba_driver = {
-@@ -2372,6 +2383,11 @@ static int __init etm4x_init(void)
+@@ -2412,6 +2423,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
  
@@ -1362,7 +1362,7 @@ index 34aee59dd147..7c5a7f7c11bd 100644
  	ret = etm4_pm_setup();
  
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2398,6 +2414,9 @@ static int __init etm4x_init(void)
+@@ -2438,6 +2454,9 @@ static int __init etm4x_init(void)
  
  static void __exit etm4x_exit(void)
  {
@@ -1843,10 +1843,10 @@ index 51ec9e7e784f..8c3713edc7a6 100644
  	if (!rc)
  		return rc;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d208047d1b8f..966e0c0f6dc4 100644
+index d797df6e5f3e..a6921ee1535a 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4423,6 +4423,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4433,6 +4433,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -2407,10 +2407,10 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 58a4c976c39b..ec7cab859414 100644
+index 99a66bc69a39..5e98cb683898 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1617,6 +1617,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1618,6 +1618,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2418,7 +2418,7 @@ index 58a4c976c39b..ec7cab859414 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2672,6 +2673,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2673,6 +2674,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
@@ -3761,7 +3761,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
  	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index a70d43723146..56d06b04f752 100755
+index 191e0461d6d5..e6f418b3e948 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi

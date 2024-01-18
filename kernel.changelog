@@ -1,5 +1,10 @@
-* Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.8]
+* Thu Jan 18 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.296455ade1fd.8]
+- Turn on IAA_CRYPTO_STATS for Fedora (Justin M. Forbes)
+- Fix up manual merge error in security.h (Justin M. Forbes)
+- fedora: new drivers and cleanups (Peter Robinson)
+- Turn on Renesas RZ for Fedora IOT rhbz2257913 (Justin M. Forbes)
 - redhat: filter-modules.sh.rhel: add dell-smm-hwmon (Scott Weaver)
+- Linux v6.8.0-0.rc0.296455ade1fd
 Resolves: 
 
 * Tue Jan 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.052d534373b7.7]
