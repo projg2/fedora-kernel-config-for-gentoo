@@ -74,10 +74,10 @@
  73 files changed, 2115 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index a36cf8cc582c..6153c957fa37 100644
+index 2e76c3476e2a..fe930d91572e 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6826,6 +6826,15 @@
+@@ -6827,6 +6827,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index f1b2fd977275..509357de9a42 100644
+index e5321e45e4e5..2251fbef5050 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -158,7 +158,7 @@ index f1b2fd977275..509357de9a42 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1239,7 +1251,13 @@ define filechk_version.h
+@@ -1243,7 +1255,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -190,10 +190,10 @@ index 0af6709570d1..54a8093d2dd3 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 8f6cf1221b6a..b9e15ff7daee 100644
+index ea01a2c43efa..bd6cfc0c1ed8 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1309,7 +1309,7 @@ endchoice
+@@ -1310,7 +1310,7 @@ endchoice
  
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -250,10 +250,10 @@ index d1f3b56e7afc..eaefd0d7cfff 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 94bff381ef20..6f35fbfac51b 100644
+index 0b97bcde70c6..c624a2bee5f8 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1587,6 +1587,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
+@@ -1588,6 +1588,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
  		cpu_detect(c);
  		get_cpu_vendor(c);
  		get_cpu_cap(c);
@@ -262,7 +262,7 @@ index 94bff381ef20..6f35fbfac51b 100644
  		cpu_parse_early_param();
  
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index ec2c21a1844e..20fb18e31a93 100644
+index 84201071dfac..f8e3f192df8d 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -345,7 +345,7 @@ index ec2c21a1844e..20fb18e31a93 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1062,19 +1114,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1116,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -366,7 +366,7 @@ index ec2c21a1844e..20fb18e31a93 100644
  
  	reserve_initrd();
  
-@@ -1189,6 +1229,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1191,6 +1231,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
  
@@ -712,10 +712,10 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 0ba008773b00..2800ab127c65 100644
+index e6ed1ba91e5c..6a87d6ca4a84 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1761,6 +1761,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -1565,7 +1565,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 33e2a9b5d339..6ae1abc3f11c 100644
+index 68e648b55767..b270026ba0ca 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1576,7 +1576,7 @@ index 33e2a9b5d339..6ae1abc3f11c 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -3031,6 +3032,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -3087,6 +3088,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -1682,7 +1682,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 0af612387083..b61fd0e890f4 100644
+index 85ab0fcf9e88..7b61fa7255d3 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1796,10 +1796,10 @@ index 2dd4137a08b2..9b14eb637003 100644
  
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 4be7f6822966..d9942df8f443 100644
+index 030c80818240..f37d3ac77cdf 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -903,6 +903,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -902,6 +902,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1807,7 +1807,7 @@ index 4be7f6822966..d9942df8f443 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -941,6 +942,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -944,6 +945,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2081,7 +2081,7 @@ index 51b5788da040..821f2a66df47 100644
  	{ MPI2_MFGPAGE_VENDORID_LSI, MPI25_MFGPAGE_DEVID_SAS3004,
  		PCI_ANY_ID, PCI_ANY_ID },
 diff --git a/drivers/scsi/qla2xxx/qla_os.c b/drivers/scsi/qla2xxx/qla_os.c
-index 03348f605c2e..fe30dee3d218 100644
+index dd674378f2f3..3baebaf2a1d6 100644
 --- a/drivers/scsi/qla2xxx/qla_os.c
 +++ b/drivers/scsi/qla2xxx/qla_os.c
 @@ -8122,6 +8122,7 @@ static const struct pci_error_handlers qla2xxx_err_handler = {
@@ -2160,10 +2160,10 @@ index 0833b3e6aa6e..104f819ce813 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 87480a6e6d93..0f0c5550bea6 100644
+index ffd7c99e24a3..da409b3d491b 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5763,6 +5763,13 @@ static void hub_event(struct work_struct *work)
+@@ -5788,6 +5788,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -2407,10 +2407,10 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 99a66bc69a39..5e98cb683898 100644
+index add9368e6314..a278f78f7ac8 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1618,6 +1618,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1620,6 +1620,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2418,7 +2418,7 @@ index 99a66bc69a39..5e98cb683898 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2673,6 +2674,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2676,6 +2677,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
@@ -3728,7 +3728,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index cb6406f485a9..71e1f15d9dce 100644
+index e2bc180cecc8..91331ce79222 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -3739,7 +3739,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1987,6 +1988,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1986,6 +1987,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3752,7 +3752,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2047,6 +2054,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2046,6 +2053,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

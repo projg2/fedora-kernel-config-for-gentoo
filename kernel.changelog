@@ -1,3 +1,8 @@
+* Fri Jan 19 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9d1694dc91ce.9]
+- Turn on CONFIG_TCP_AO for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.9d1694dc91ce
+Resolves: 
+
 * Thu Jan 18 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.296455ade1fd.8]
 - Turn on IAA_CRYPTO_STATS for Fedora (Justin M. Forbes)
 - Fix up manual merge error in security.h (Justin M. Forbes)
