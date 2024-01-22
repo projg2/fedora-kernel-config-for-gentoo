@@ -1,3 +1,17 @@
+* Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.12]
+- Remove CONFIG_NET_EMATCH_STACK file for RHEL (Justin M. Forbes)
+Resolves: 
+
+* Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.11]
+- Linux v6.8.0-0.rc1
+Resolves: 
+
+* Sun Jan 21 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.7a396820222d.10]
+- CONFIG_NETFS_SUPPORT should be m after the merge (Justin M. Forbes)
+- Turn FSCACHE and NETFS from m to y in pending (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.7a396820222d
+Resolves: 
+
 * Fri Jan 19 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9d1694dc91ce.9]
 - Turn on CONFIG_TCP_AO for Fedora (Justin M. Forbes)
 - Linux v6.8.0-0.rc0.9d1694dc91ce

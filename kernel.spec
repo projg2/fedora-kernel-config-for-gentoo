@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc0.20240119git9d1694dc91ce.9
+%define pkgrelease 0.rc1.12
 %define kversion 6
-%define tarfile_release 6.7-12377-g9d1694dc91ce
+%define tarfile_release 6.8-rc1
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc0.20240119git9d1694dc91ce.9%{?buildid}%{?dist}
+%define specrelease 0.rc1.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,6 +3767,17 @@ fi\
 #
 #
 %changelog
+* Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.12]
+- Remove CONFIG_NET_EMATCH_STACK file for RHEL (Justin M. Forbes)
+
+* Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.11]
+- Linux v6.8.0-0.rc1
+
+* Sun Jan 21 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.7a396820222d.10]
+- CONFIG_NETFS_SUPPORT should be m after the merge (Justin M. Forbes)
+- Turn FSCACHE and NETFS from m to y in pending (Justin M. Forbes)
+- Linux v6.8.0-0.rc0.7a396820222d
+
 * Fri Jan 19 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc0.9d1694dc91ce.9]
 - Turn on CONFIG_TCP_AO for Fedora (Justin M. Forbes)
 - Linux v6.8.0-0.rc0.9d1694dc91ce

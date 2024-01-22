@@ -74,10 +74,10 @@
  73 files changed, 2115 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2e76c3476e2a..fe930d91572e 100644
+index 31b3a25680d0..52ff60af2044 100644
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6827,6 +6827,15 @@
+@@ -6829,6 +6829,15 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index e5321e45e4e5..2251fbef5050 100644
+index 9869f57c3fb3..7b4cff1b3145 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -190,10 +190,10 @@ index 0af6709570d1..54a8093d2dd3 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index ea01a2c43efa..bd6cfc0c1ed8 100644
+index aa7c1d435139..9d3053d2d256 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1310,7 +1310,7 @@ endchoice
+@@ -1328,7 +1328,7 @@ endchoice
  
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -3728,7 +3728,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index e2bc180cecc8..91331ce79222 100644
+index 795b21154446..9b9b8ef568fb 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -3739,7 +3739,7 @@ index e2bc180cecc8..91331ce79222 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1986,6 +1987,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2001,6 +2002,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3752,7 +3752,7 @@ index e2bc180cecc8..91331ce79222 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2046,6 +2053,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2061,6 +2068,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
