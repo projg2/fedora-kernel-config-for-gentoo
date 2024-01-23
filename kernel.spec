@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc1.12
+%define pkgrelease 0.rc1.20240123git7ed2632ec7d7.12
 %define kversion 6
-%define tarfile_release 6.8-rc1
+%define tarfile_release 6.8-rc1-26-g7ed2632ec7d7
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.12%{?buildid}%{?dist}
+%define specrelease 0.rc1.20240123git7ed2632ec7d7.12%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3767,8 +3767,12 @@ fi\
 #
 #
 %changelog
-* Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.12]
+* Tue Jan 23 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.7ed2632ec7d7.12]
+- New configs in drivers/crypto (Fedora Kernel Team)
+- net: bump CONFIG_MAX_SKB_FRAGS to 45 (Marcelo Ricardo Leitner)
+- Enable CONFIG_MARVELL_88Q2XXX_PHY (Izabela Bakollari)
 - Remove CONFIG_NET_EMATCH_STACK file for RHEL (Justin M. Forbes)
+- Linux v6.8.0-0.rc1.7ed2632ec7d7
 
 * Mon Jan 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.11]
 - Linux v6.8.0-0.rc1
