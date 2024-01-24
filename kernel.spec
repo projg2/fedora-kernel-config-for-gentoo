@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc1.20240123git7ed2632ec7d7.12
+%define pkgrelease 0.rc1.20240124git615d30064886.13
 %define kversion 6
-%define tarfile_release 6.8-rc1-26-g7ed2632ec7d7
+%define tarfile_release 6.8-rc1-29-g615d30064886
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20240123git7ed2632ec7d7.12%{?buildid}%{?dist}
+%define specrelease 0.rc1.20240124git615d30064886.13%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -1903,6 +1903,7 @@ update_target=%{primary_target}
 if [ "%{primary_target}" == "rhel" ]; then
 : # no-op to avoid empty if-fi error
 %if 0%{?centos}
+  update_scripts $update_target
   echo "Updating scripts/sources to centos version"
   update_target=centos
 %endif
@@ -3767,6 +3768,11 @@ fi\
 #
 #
 %changelog
+* Wed Jan 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.615d30064886.13]
+- CI: include aarch64 in CKI container image gating (Tales Aparecida)
+- redhat: spec: Fix update_scripts run for CentOS builds (Neal Gompa)
+- Linux v6.8.0-0.rc1.615d30064886
+
 * Tue Jan 23 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.7ed2632ec7d7.12]
 - New configs in drivers/crypto (Fedora Kernel Team)
 - net: bump CONFIG_MAX_SKB_FRAGS to 45 (Marcelo Ricardo Leitner)

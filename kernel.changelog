@@ -1,3 +1,9 @@
+* Wed Jan 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.615d30064886.13]
+- CI: include aarch64 in CKI container image gating (Tales Aparecida)
+- redhat: spec: Fix update_scripts run for CentOS builds (Neal Gompa)
+- Linux v6.8.0-0.rc1.615d30064886
+Resolves: 
+
 * Tue Jan 23 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.7ed2632ec7d7.12]
 - New configs in drivers/crypto (Fedora Kernel Team)
 - net: bump CONFIG_MAX_SKB_FRAGS to 45 (Marcelo Ricardo Leitner)
