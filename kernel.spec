@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc1.20240124git615d30064886.13
+%define pkgrelease 0.rc1.20240125git6098d87eaf31.15
 %define kversion 6
-%define tarfile_release 6.8-rc1-29-g615d30064886
+%define tarfile_release 6.8-rc1-49-g6098d87eaf31
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20240124git615d30064886.13%{?buildid}%{?dist}
+%define specrelease 0.rc1.20240125git6098d87eaf31.15%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -224,6 +224,8 @@ Summary: The Linux kernel
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
 # perf
 %define with_perf      %{?_without_perf:      0} %{?!_without_perf:      1}
+# libperf
+%define with_libperf   %{?_without_libperf:   0} %{?!_without_libperf:   1}
 # tools
 %define with_tools     %{?_without_tools:     0} %{?!_without_tools:     1}
 # bpf tool
@@ -300,9 +302,10 @@ Summary: The Linux kernel
 # no stablelist
 %define with_kernel_abi_stablelists 0
 # Fedora builds these separately
-%define with_perf 0
-%define with_tools 0
-%define with_bpftool 0
+%define with_perf 1
+%define with_libperf 1
+%define with_tools 1
+%define with_bpftool 1
 # No realtime fedora variants
 %define with_realtime 0
 %define with_arm64_64k 0
@@ -388,6 +391,7 @@ Summary: The Linux kernel
 %define with_realtime 0
 %define with_vdso_install 0
 %define with_perf 0
+%define with_libperf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
@@ -402,6 +406,7 @@ Summary: The Linux kernel
 %define with_base 0
 %define with_vdso_install 0
 %define with_perf 0
+%define with_libperf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
@@ -417,6 +422,7 @@ Summary: The Linux kernel
 %define with_debuginfo 0
 %define with_vdso_install 0
 %define with_perf 0
+%define with_libperf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
@@ -480,6 +486,7 @@ Summary: The Linux kernel
 %define with_cross_headers 0
 %define with_tools 0
 %define with_perf 0
+%define with_libperf 0
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
@@ -572,6 +579,7 @@ Summary: The Linux kernel
 
 %define with_debuginfo 0
 %define with_perf 0
+%define with_libperf 0
 %define with_tools 0
 %define with_bpftool 0
 %define with_selftests 0
@@ -1124,6 +1132,21 @@ This package provides debug information for the perf python bindings.
 # with_perf
 %endif
 
+%if %{with_libperf}
+%package -n libperf
+Summary: The perf library from kernel source
+%description -n libperf
+This package contains the kernel source perf library.
+
+%package -n libperf-devel
+Summary: Developement files for the perf library from kernel source
+%description -n libperf-devel
+This package includes libraries and header files needed for development
+of applications which use perf library from kernel source.
+
+# with_libperf
+%endif
+
 %if %{with_tools}
 %package -n %{package_name}-tools
 Summary: Assortment of tools for the Linux kernel
@@ -1202,7 +1225,14 @@ analysing the logical and timing behavior of Linux.
 
 %if %{with_bpftool}
 
+%if 0%{?fedora}
+# bpftoolverion doesn't bump with stable updates so let's stick with
+# upstream kernel version for the package name. We still get correct
+# output with bpftool -V.
+%define bpftoolversion  %specrpmversion
+%else
 %define bpftoolversion 7.4.0
+%endif
 
 %package -n bpftool
 Summary: Inspection and simple manipulation of eBPF programs and maps
@@ -2728,6 +2758,12 @@ chmod +x tools/perf/check-headers.sh
 %{perf_make} DESTDIR=$RPM_BUILD_ROOT all
 %endif
 
+%if %{with_libperf}
+%global libperf_make \
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{?cross_opts} -C tools/lib/perf V=1
+%{libperf_make} DESTDIR=$RPM_BUILD_ROOT
+%endif
+
 %global tools_make \
   CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags}" %{make} %{?make_opts}
 
@@ -3007,6 +3043,12 @@ mkdir -p %{buildroot}/%{_mandir}/man1
 # LIBTRACEEVENT_DYNAMIC=1 above in perf_make macro). Those files should already
 # ship with libtraceevent package.
 rm -rf %{buildroot}%{_libdir}/traceevent
+%endif
+
+%if %{with_libperf}
+%{libperf_make} DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} install install_headers
+# This is installed on some arches and we don't want to ship it
+rm -rf %{buildroot}%{_libdir}/libperf.a
 %endif
 
 %if %{with_tools}
@@ -3494,6 +3536,37 @@ fi\
 # with_perf
 %endif
 
+%if %{with_libperf}
+%files -n libperf
+%{_libdir}/libperf.so.0
+%{_libdir}/libperf.so.0.0.1
+
+%files -n libperf-devel
+%{_libdir}/libperf.so
+%{_libdir}/pkgconfig/libperf.pc
+%{_includedir}/internal/*.h
+%{_includedir}/perf/bpf_perf.h
+%{_includedir}/perf/core.h
+%{_includedir}/perf/cpumap.h
+%{_includedir}/perf/perf_dlfilter.h
+%{_includedir}/perf/event.h
+%{_includedir}/perf/evlist.h
+%{_includedir}/perf/evsel.h
+%{_includedir}/perf/mmap.h
+%{_includedir}/perf/threadmap.h
+%{_mandir}/man3/libperf.3.gz
+%{_mandir}/man7/libperf-counting.7.gz
+%{_mandir}/man7/libperf-sampling.7.gz
+%{_docdir}/libperf/examples/sampling.c
+%{_docdir}/libperf/examples/counting.c
+%{_docdir}/libperf/html/libperf.html
+%{_docdir}/libperf/html/libperf-counting.html
+%{_docdir}/libperf/html/libperf-sampling.html
+
+# with_libperf
+%endif
+
+
 %if %{with_tools}
 %ifnarch %{cpupowerarchs}
 %files -n %{package_name}-tools
@@ -3543,6 +3616,8 @@ fi\
 %files -n %{package_name}-tools-libs-devel
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
+%{_includedir}/cpuidle.h
+%{_includedir}/powercap.h
 %endif
 
 %files -n rtla
@@ -3768,6 +3843,20 @@ fi\
 #
 #
 %changelog
+* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.15]
+- Remove separate license tag for libperf (Justin M. Forbes)
+- Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
+- Don't ship libperf.a in libperf-devel (Justin M. Forbes)
+- add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+
+* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.14]
+- redhat/Makefile: fix setup-source and document its caveat (Ondrej Mosnacek)
+- redhat/Makefile: fix race condition when making the KABI tarball (Ondrej Mosnacek)
+- redhat/Makefile: refactor KABI tarball creation (Ondrej Mosnacek)
+- redhat/configs: Remove HOTPLUG_CPU0 configs (Prarit Bhargava)
+- gitlab-ci: merge ark-latest before building in MR pipelines (Michael Hofmann)
+- Linux v6.8.0-0.rc1.6098d87eaf31
+
 * Wed Jan 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.615d30064886.13]
 - CI: include aarch64 in CKI container image gating (Tales Aparecida)
 - redhat: spec: Fix update_scripts run for CentOS builds (Neal Gompa)

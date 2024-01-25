@@ -1,3 +1,19 @@
+* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.15]
+- Remove separate license tag for libperf (Justin M. Forbes)
+- Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
+- Don't ship libperf.a in libperf-devel (Justin M. Forbes)
+- add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+Resolves: 
+
+* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.14]
+- redhat/Makefile: fix setup-source and document its caveat (Ondrej Mosnacek)
+- redhat/Makefile: fix race condition when making the KABI tarball (Ondrej Mosnacek)
+- redhat/Makefile: refactor KABI tarball creation (Ondrej Mosnacek)
+- redhat/configs: Remove HOTPLUG_CPU0 configs (Prarit Bhargava)
+- gitlab-ci: merge ark-latest before building in MR pipelines (Michael Hofmann)
+- Linux v6.8.0-0.rc1.6098d87eaf31
+Resolves: 
+
 * Wed Jan 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.615d30064886.13]
 - CI: include aarch64 in CKI container image gating (Tales Aparecida)
 - redhat: spec: Fix update_scripts run for CentOS builds (Neal Gompa)
