@@ -1,8 +1,27 @@
-* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.15]
+* Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.19]
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+Resolves: 
+
+* Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.18]
+- Linux v6.8.0-0.rc2
+Resolves: 
+
+* Sun Jan 28 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.8a696a29c690.17]
+- Linux v6.8.0-0.rc1.8a696a29c690
+Resolves: 
+
+* Sat Jan 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.3a5879d495b2.16]
+- Revert "Merge branch 'fix-kabi-build-race' into 'os-build'" (Justin M. Forbes)
+- Linux v6.8.0-0.rc1.3a5879d495b2
+Resolves: 
+
+* Fri Jan 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.ecb1b8288dc7.15]
+- redhat: configs: fedora: Enable sii902x bridge chip driver (Erico Nunes)
+- Enable CONFIG_TCP_CONG_ILLINOIS for RHEL (Davide Caratti)
+- Linux v6.8.0-0.rc1.ecb1b8288dc7
 Resolves: 
 
 * Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.14]

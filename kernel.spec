@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc1.20240125git6098d87eaf31.15
+%define pkgrelease 0.rc2.19
 %define kversion 6
-%define tarfile_release 6.8-rc1-49-g6098d87eaf31
+%define tarfile_release 6.8-rc2
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc1.20240125git6098d87eaf31.15%{?buildid}%{?dist}
+%define specrelease 0.rc2.19%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3843,11 +3843,26 @@ fi\
 #
 #
 %changelog
-* Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.15]
+* Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.19]
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+
+* Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.18]
+- Linux v6.8.0-0.rc2
+
+* Sun Jan 28 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.8a696a29c690.17]
+- Linux v6.8.0-0.rc1.8a696a29c690
+
+* Sat Jan 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.3a5879d495b2.16]
+- Revert "Merge branch 'fix-kabi-build-race' into 'os-build'" (Justin M. Forbes)
+- Linux v6.8.0-0.rc1.3a5879d495b2
+
+* Fri Jan 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.ecb1b8288dc7.15]
+- redhat: configs: fedora: Enable sii902x bridge chip driver (Erico Nunes)
+- Enable CONFIG_TCP_CONG_ILLINOIS for RHEL (Davide Caratti)
+- Linux v6.8.0-0.rc1.ecb1b8288dc7
 
 * Thu Jan 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc1.6098d87eaf31.14]
 - redhat/Makefile: fix setup-source and document its caveat (Ondrej Mosnacek)
