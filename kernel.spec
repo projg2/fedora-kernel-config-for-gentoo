@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc2.19
+%define pkgrelease 0.rc2.20240130git861c0981648f.20
 %define kversion 6
-%define tarfile_release 6.8-rc2
+%define tarfile_release 6.8-rc2-31-g861c0981648f
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.19%{?buildid}%{?dist}
+%define specrelease 0.rc2.20240130git861c0981648f.20%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3843,11 +3843,14 @@ fi\
 #
 #
 %changelog
-* Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.19]
+* Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.20]
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+
+* Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.19]
+- Linux v6.8.0-0.rc2.861c0981648f
 
 * Mon Jan 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.18]
 - Linux v6.8.0-0.rc2
