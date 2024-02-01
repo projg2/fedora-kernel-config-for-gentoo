@@ -19,7 +19,6 @@
  drivers/iommu/iommu.c                              |  22 ++
  drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
  drivers/pci/quirks.c                               |  24 ++
- drivers/rtc/rtc-cmos.c                             |  18 +-
  drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -41,10 +40,10 @@
  sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
  sound/pci/hda/hda_component.h                      |   4 +
  sound/pci/hda/patch_realtek.c                      |  34 +-
- 43 files changed, 1132 insertions(+), 241 deletions(-)
+ 42 files changed, 1120 insertions(+), 235 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index bad16eda67e2..cfd8719528dd 100644
+index 59db5f9c6f49..df7a0b400902 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -549,7 +548,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 82fcfd29bc4d..17b7e096b682 100644
+index 3c197db42c9d..16e4a2e90fae 100644
 --- a/drivers/firmware/sysfb.c
 +++ b/drivers/firmware/sysfb.c
 @@ -34,6 +34,22 @@
@@ -1019,41 +1018,6 @@ index e0081914052f..ae2d04c2f2b3 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
-index 228fb2d11c70..696cfa7025de 100644
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -818,18 +818,24 @@ static void rtc_wake_off(struct device *dev)
- }
- 
- #ifdef CONFIG_X86
--/* Enable use_acpi_alarm mode for Intel platforms no earlier than 2015 */
- static void use_acpi_alarm_quirks(void)
- {
--	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
-+	switch (boot_cpu_data.x86_vendor) {
-+	case X86_VENDOR_INTEL:
-+		if (dmi_get_bios_year() < 2015)
-+			return;
-+		break;
-+	case X86_VENDOR_AMD:
-+	case X86_VENDOR_HYGON:
-+		if (dmi_get_bios_year() < 2021)
-+			return;
-+		break;
-+	default:
- 		return;
--
-+	}
- 	if (!is_hpet_enabled())
- 		return;
- 
--	if (dmi_get_bios_year() < 2015)
--		return;
--
- 	use_acpi_alarm = true;
- }
- #else
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
 index c2e8d9e27749..c24dbb681664 100644
 --- a/drivers/scsi/sd.c
@@ -1169,10 +1133,10 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 2b8d85aae083..6a560e1abb59 100644
+index 74c60f9446f8..6a133239e27e 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -405,6 +405,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -407,6 +407,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1384,10 +1348,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 5f16eecde00b..974be25cfa70 100644
+index b50c7f566189..8a12e0f0a0fe 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -484,6 +484,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -486,6 +486,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1395,7 +1359,7 @@ index 5f16eecde00b..974be25cfa70 100644
  #else /* CONFIG_SECURITY */
  
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1395,6 +1396,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1404,6 +1405,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1556,10 +1520,10 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 23b129d482a7..55d0fe0d121b 100644
+index 840a3d58a290..947e76d2f482 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5230,6 +5230,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5248,6 +5248,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  
