@@ -1,30 +1,30 @@
- Makefile                                           |  20 +-
+ Makefile                                           |  20 ++-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  22 +-
+ arch/x86/kernel/setup.c                            |  22 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 ++
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++++--
- drivers/firmware/efi/secureboot.c                  |  38 +++
- drivers/firmware/sysfb.c                           |  18 +-
- drivers/hid/hid-rmi.c                              |  66 ----
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
- drivers/input/rmi4/rmi_driver.c                    | 124 ++++---
- drivers/iommu/iommu.c                              |  22 ++
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++----
+ drivers/firmware/efi/secureboot.c                  |  38 +++++
+ drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/hid/hid-rmi.c                              |  66 --------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
+ drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
+ drivers/iommu/iommu.c                              |  22 +++
  drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
- drivers/pci/quirks.c                               |  24 ++
- drivers/scsi/sd.c                                  |  10 +
+ drivers/pci/quirks.c                               |  24 +++
+ drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   1 +
- include/linux/rh_kabi.h                            | 172 ++++++++++
+ include/linux/rh_kabi.h                            | 172 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
@@ -32,18 +32,14 @@
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 +
- sound/pci/hda/cs35l41_hda.c                        | 106 +++++-
- sound/pci/hda/cs35l41_hda.h                        |   8 +-
- sound/pci/hda/cs35l41_hda_property.c               | 355 +++++++++++++++++++--
- sound/pci/hda/hda_component.h                      |   4 +
- sound/pci/hda/patch_realtek.c                      |  34 +-
- 42 files changed, 1120 insertions(+), 235 deletions(-)
+ security/security.c                                |  12 ++
+ tools/power/cpupower/Makefile                      |   2 +-
+ 38 files changed, 674 insertions(+), 176 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 59db5f9c6f49..df7a0b400902 100644
+index 96a08c9f0faa..e627bde4e578 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -65,7 +61,7 @@ index 59db5f9c6f49..df7a0b400902 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1250,7 +1262,13 @@ define filechk_version.h
+@@ -1239,7 +1251,13 @@ define filechk_version.h
  	((c) > 255 ? 255 : (c)))';                                       \
  	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
  	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
@@ -93,7 +89,7 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 8d0b95c17312..118ae555a179 100644
+index ba75f6bee774..7d37ce1772f1 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2520,3 +2520,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -106,7 +102,7 @@ index 8d0b95c17312..118ae555a179 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index de6ad0fb2328..5cc2758be027 100644
+index 5701356f4f33..cf3593dc271e 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -117,7 +113,7 @@ index de6ad0fb2328..5cc2758be027 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
  
-@@ -914,6 +915,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -907,6 +908,9 @@ void __init setup_arch(char **cmdline_p)
  
  	log_component_list();
  
@@ -128,7 +124,7 @@ index de6ad0fb2328..5cc2758be027 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index b098b1fa2470..a159419e60df 100644
+index 1526747bedf2..c482cbf0ccaf 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -139,7 +135,7 @@ index b098b1fa2470..a159419e60df 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -1028,6 +1029,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -903,6 +904,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -153,7 +149,7 @@ index b098b1fa2470..a159419e60df 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1189,19 +1197,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1072,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -237,7 +233,7 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1d249d0f61ae..f064f4c6405a 100644
+index 02bb2cce423f..4a6287d7a22d 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -257,7 +253,7 @@ index 1d249d0f61ae..f064f4c6405a 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index f1263364fa97..24ac410f4366 100644
+index 1a63200ea437..a911e976a596 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -312,7 +308,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
  
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 186f1fee7534..93e3a76596ff 100644
+index d6f14279684d..9bc53b1970ab 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -323,7 +319,7 @@ index 186f1fee7534..93e3a76596ff 100644
  #include <linux/delay.h>
  
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5516,8 +5517,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5511,8 +5512,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
  
@@ -359,7 +355,7 @@ index e489fefd23da..f2dfae764fb5 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1974f0ad32ba..6ba6391494ec 100644
+index 9d3910d1abe1..f73b3ba6ef0b 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -32,6 +32,7 @@
@@ -370,9 +366,9 @@ index 1974f0ad32ba..6ba6391494ec 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -983,40 +984,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -972,40 +973,101 @@ int efi_mem_type(unsigned long phys_addr)
+ 	return -EINVAL;
  }
- #endif
  
 +struct efi_error_code {
 +	efi_status_t status;
@@ -584,7 +580,7 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index 84e7ba5314d3..efc96776f761 100644
+index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -609,7 +605,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	return 1;
  }
  
-@@ -591,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -589,56 +580,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
  
@@ -666,7 +662,7 @@ index 84e7ba5314d3..efc96776f761 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -713,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -711,18 +652,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  
  	mutex_init(&data->page_mutex);
  
@@ -929,7 +925,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3a67e636287a..eb5e796277d6 100644
+index 33e2a9b5d339..6ae1abc3f11c 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -940,7 +936,7 @@ index 3a67e636287a..eb5e796277d6 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2931,6 +2932,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -3031,6 +3032,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -984,7 +980,7 @@ index 6b6aa3c36744..0ce08e9a0a3d 100644
  	arg->desc_id = ev->desc_id;
  	arg->status = ev->status;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index e0081914052f..ae2d04c2f2b3 100644
+index d55a3ffae4b8..a8c1d69567cd 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4410,6 +4410,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1019,7 +1015,7 @@ index e0081914052f..ae2d04c2f2b3 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index c2e8d9e27749..c24dbb681664 100644
+index 542a4bbb21bc..62161ceed2e2 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1037,7 +1033,7 @@ index c2e8d9e27749..c24dbb681664 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
+@@ -4048,6 +4056,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -1047,10 +1043,10 @@ index c2e8d9e27749..c24dbb681664 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index dfc30cebd4c4..ce1e2cf26478 100644
+index 87480a6e6d93..0f0c5550bea6 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5759,6 +5759,13 @@ static void hub_event(struct work_struct *work)
+@@ -5763,6 +5763,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -1065,7 +1061,7 @@ index dfc30cebd4c4..ce1e2cf26478 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 80b21d1c6eaf..b66c0683f2fc 100644
+index 9cc5bf32f6f2..7462fb1fc99e 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -44,6 +44,8 @@ struct screen_info;
@@ -1077,7 +1073,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -871,6 +873,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -864,6 +866,14 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1092,7 +1088,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -882,6 +892,8 @@ static inline bool efi_enabled(int feature)
+@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
  
@@ -1101,7 +1097,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  bool __pure __efi_soft_reserve_enabled(void);
  
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -903,6 +915,8 @@ static inline bool efi_enabled(int feature)
+@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
  
@@ -1110,7 +1106,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -917,6 +931,7 @@ static inline void efi_find_mirror(void) {}
+@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
@@ -1118,7 +1114,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  
  /*
   * Variable Attributes
-@@ -1133,13 +1148,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1126,13 +1141,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const void *caller);
  extern unsigned long efi_call_virt_save_flags(void);
  
@@ -1133,7 +1129,7 @@ index 80b21d1c6eaf..b66c0683f2fc 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 74c60f9446f8..6a133239e27e 100644
+index 472cb16458b0..7c0f6dd800cb 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -407,6 +407,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1348,7 +1344,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index b50c7f566189..8a12e0f0a0fe 100644
+index 9d3138c6364c..7089843865bf 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -486,6 +486,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -1414,18 +1410,18 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index ac4ef3e206bb..80ede130812c 100644
+index cb6406f485a9..71e1f15d9dce 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
-@@ -23,6 +23,7 @@
+@@ -22,6 +22,7 @@
+ #include <errno.h>
  #include "modpost.h"
  #include "../../include/linux/license.h"
- #include "../../include/linux/module_symbol.h"
 +#include "../../include/generated/uapi/linux/version.h"
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2090,6 +2091,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1987,6 +1988,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1438,7 +1434,7 @@ index ac4ef3e206bb..80ede130812c 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2150,6 +2157,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2047,6 +2054,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -1520,7 +1516,7 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 840a3d58a290..947e76d2f482 100644
+index 266cec94369b..c572a4da96b2 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -5248,6 +5248,18 @@ int security_locked_down(enum lockdown_reason what)
@@ -1542,715 +1538,16 @@ index 840a3d58a290..947e76d2f482 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 3c157b006a5a..257f71e9ec07 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -33,6 +33,9 @@
- #define CAL_AMBIENT_DSP_CTL_NAME	"CAL_AMBIENT"
- #define CAL_DSP_CTL_TYPE		5
- #define CAL_DSP_CTL_ALG			205
-+#define CS35L41_UUID			"50d90cdc-3de4-4f18-b528-c7fe3b71f40d"
-+#define CS35L41_DSM_GET_MUTE		5
-+#define CS35L41_NOTIFY_EVENT		0x91
+diff --git a/tools/power/cpupower/Makefile b/tools/power/cpupower/Makefile
+index b53753dee02f..90701fc65aa2 100644
+--- a/tools/power/cpupower/Makefile
++++ b/tools/power/cpupower/Makefile
+@@ -53,7 +53,7 @@ DESTDIR ?=
  
- static bool firmware_autostart = 1;
- module_param(firmware_autostart, bool, 0444);
-@@ -563,6 +566,31 @@ static void cs35l41_hda_play_start(struct device *dev)
+ VERSION:=			$(shell ./utils/version-gen.sh)
+ LIB_MAJ=			0.0.1
+-LIB_MIN=			1
++LIB_MIN=			0
  
- }
- 
-+static void cs35l41_mute(struct device *dev, bool mute)
-+{
-+	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-+	struct regmap *reg = cs35l41->regmap;
-+
-+	dev_dbg(dev, "Mute(%d:%d) Playback Started: %d\n", mute, cs35l41->mute_override,
-+		cs35l41->playback_started);
-+
-+	if (cs35l41->playback_started) {
-+		if (mute || cs35l41->mute_override) {
-+			dev_dbg(dev, "Muting\n");
-+			regmap_multi_reg_write(reg, cs35l41_hda_mute, ARRAY_SIZE(cs35l41_hda_mute));
-+		} else {
-+			dev_dbg(dev, "Unmuting\n");
-+			if (cs35l41->firmware_running) {
-+				regmap_multi_reg_write(reg, cs35l41_hda_unmute_dsp,
-+						ARRAY_SIZE(cs35l41_hda_unmute_dsp));
-+			} else {
-+				regmap_multi_reg_write(reg, cs35l41_hda_unmute,
-+						ARRAY_SIZE(cs35l41_hda_unmute));
-+			}
-+		}
-+	}
-+}
-+
- static void cs35l41_hda_play_done(struct device *dev)
- {
- 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-@@ -572,13 +600,7 @@ static void cs35l41_hda_play_done(struct device *dev)
- 
- 	cs35l41_global_enable(dev, reg, cs35l41->hw_cfg.bst_type, 1,
- 			      cs35l41->firmware_running);
--	if (cs35l41->firmware_running) {
--		regmap_multi_reg_write(reg, cs35l41_hda_unmute_dsp,
--				       ARRAY_SIZE(cs35l41_hda_unmute_dsp));
--	} else {
--		regmap_multi_reg_write(reg, cs35l41_hda_unmute,
--				       ARRAY_SIZE(cs35l41_hda_unmute));
--	}
-+	cs35l41_mute(dev, false);
- }
- 
- static void cs35l41_hda_pause_start(struct device *dev)
-@@ -588,7 +610,7 @@ static void cs35l41_hda_pause_start(struct device *dev)
- 
- 	dev_dbg(dev, "Pause (Start)\n");
- 
--	regmap_multi_reg_write(reg, cs35l41_hda_mute, ARRAY_SIZE(cs35l41_hda_mute));
-+	cs35l41_mute(dev, true);
- 	cs35l41_global_enable(dev, reg, cs35l41->hw_cfg.bst_type, 0,
- 			      cs35l41->firmware_running);
- }
-@@ -1116,6 +1138,53 @@ static int cs35l41_create_controls(struct cs35l41_hda *cs35l41)
- 	return 0;
- }
- 
-+static bool cs35l41_dsm_supported(acpi_handle handle, unsigned int commands)
-+{
-+	guid_t guid;
-+
-+	guid_parse(CS35L41_UUID, &guid);
-+
-+	return acpi_check_dsm(handle, &guid, 0, BIT(commands));
-+}
-+
-+static int cs35l41_get_acpi_mute_state(struct cs35l41_hda *cs35l41, acpi_handle handle)
-+{
-+	guid_t guid;
-+	union acpi_object *ret;
-+	int mute = -ENODEV;
-+
-+	guid_parse(CS35L41_UUID, &guid);
-+
-+	if (cs35l41_dsm_supported(handle, CS35L41_DSM_GET_MUTE)) {
-+		ret = acpi_evaluate_dsm(handle, &guid, 0, CS35L41_DSM_GET_MUTE, NULL);
-+		mute = *ret->buffer.pointer;
-+		dev_dbg(cs35l41->dev, "CS35L41_DSM_GET_MUTE: %d\n", mute);
-+	}
-+
-+	dev_dbg(cs35l41->dev, "%s: %d\n", __func__, mute);
-+
-+	return mute;
-+}
-+
-+static void cs35l41_acpi_device_notify(acpi_handle handle, u32 event, struct device *dev)
-+{
-+	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-+	int mute;
-+
-+	if (event != CS35L41_NOTIFY_EVENT)
-+		return;
-+
-+	mute = cs35l41_get_acpi_mute_state(cs35l41, handle);
-+	if (mute < 0) {
-+		dev_warn(cs35l41->dev, "Unable to retrieve mute state: %d\n", mute);
-+		return;
-+	}
-+
-+	dev_dbg(cs35l41->dev, "Requesting mute value: %d\n", mute);
-+	cs35l41->mute_override = (mute > 0);
-+	cs35l41_mute(cs35l41->dev, cs35l41->mute_override);
-+}
-+
- static int cs35l41_hda_bind(struct device *dev, struct device *master, void *master_data)
- {
- 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
-@@ -1157,6 +1226,14 @@ static int cs35l41_hda_bind(struct device *dev, struct device *master, void *mas
- 	comps->playback_hook = cs35l41_hda_playback_hook;
- 	comps->pre_playback_hook = cs35l41_hda_pre_playback_hook;
- 	comps->post_playback_hook = cs35l41_hda_post_playback_hook;
-+	comps->acpi_notify = cs35l41_acpi_device_notify;
-+	comps->adev = cs35l41->dacpi;
-+
-+	comps->acpi_notifications_supported = cs35l41_dsm_supported(acpi_device_handle(comps->adev),
-+		CS35L41_DSM_GET_MUTE);
-+
-+	cs35l41->mute_override = cs35l41_get_acpi_mute_state(cs35l41,
-+						acpi_device_handle(cs35l41->dacpi)) > 0;
- 
- 	mutex_unlock(&cs35l41->fw_mutex);
- 
-@@ -1430,8 +1507,8 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
- 		return -ENODEV;
- 	}
- 
-+	cs35l41->dacpi = adev;
- 	physdev = get_device(acpi_get_first_physical_node(adev));
--	acpi_dev_put(adev);
- 
- 	sub = acpi_get_subsystem_id(ACPI_HANDLE(physdev));
- 	if (IS_ERR(sub))
-@@ -1541,6 +1618,7 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
- 	hw_cfg->valid = false;
- 	hw_cfg->gpio1.valid = false;
- 	hw_cfg->gpio2.valid = false;
-+	acpi_dev_put(cs35l41->dacpi);
- put_physdev:
- 	put_device(physdev);
- 
-@@ -1644,10 +1722,7 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	if (ret)
- 		goto err;
- 
--	ret = regmap_multi_reg_write(cs35l41->regmap, cs35l41_hda_mute,
--				     ARRAY_SIZE(cs35l41_hda_mute));
--	if (ret)
--		goto err;
-+	cs35l41_mute(cs35l41->dev, true);
- 
- 	INIT_WORK(&cs35l41->fw_load_work, cs35l41_fw_load_work);
- 	mutex_init(&cs35l41->fw_mutex);
-@@ -1684,6 +1759,8 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
-+	gpiod_put(cs35l41->cs_gpio);
-+	acpi_dev_put(cs35l41->dacpi);
- 	kfree(cs35l41->acpi_subsystem_id);
- 
- 	return ret;
-@@ -1703,11 +1780,14 @@ void cs35l41_hda_remove(struct device *dev)
- 
- 	component_del(cs35l41->dev, &cs35l41_hda_comp_ops);
- 
-+	acpi_dev_put(cs35l41->dacpi);
-+
- 	pm_runtime_put_noidle(cs35l41->dev);
- 
- 	if (cs35l41_safe_reset(cs35l41->regmap, cs35l41->hw_cfg.bst_type))
- 		gpiod_set_value_cansleep(cs35l41->reset_gpio, 0);
- 	gpiod_put(cs35l41->reset_gpio);
-+	gpiod_put(cs35l41->cs_gpio);
- 	kfree(cs35l41->acpi_subsystem_id);
- }
- EXPORT_SYMBOL_NS_GPL(cs35l41_hda_remove, SND_HDA_SCODEC_CS35L41);
-diff --git a/sound/pci/hda/cs35l41_hda.h b/sound/pci/hda/cs35l41_hda.h
-index b93bf762976e..3d925d677213 100644
---- a/sound/pci/hda/cs35l41_hda.h
-+++ b/sound/pci/hda/cs35l41_hda.h
-@@ -10,6 +10,7 @@
- #ifndef __CS35L41_HDA_H__
- #define __CS35L41_HDA_H__
- 
-+#include <linux/acpi.h>
- #include <linux/efi.h>
- #include <linux/regulator/consumer.h>
- #include <linux/gpio/consumer.h>
-@@ -34,8 +35,8 @@ struct cs35l41_amp_efi_data {
- } __packed;
- 
- enum cs35l41_hda_spk_pos {
--	CS35l41_LEFT,
--	CS35l41_RIGHT,
-+	CS35L41_LEFT,
-+	CS35L41_RIGHT,
- };
- 
- enum cs35l41_hda_gpio_function {
-@@ -49,6 +50,7 @@ struct cs35l41_hda {
- 	struct device *dev;
- 	struct regmap *regmap;
- 	struct gpio_desc *reset_gpio;
-+	struct gpio_desc *cs_gpio;
- 	struct cs35l41_hw_cfg hw_cfg;
- 	struct hda_codec *codec;
- 
-@@ -70,6 +72,8 @@ struct cs35l41_hda {
- 	bool halo_initialized;
- 	bool playback_started;
- 	struct cs_dsp cs_dsp;
-+	struct acpi_device *dacpi;
-+	bool mute_override;
- };
- 
- enum halo_state {
-diff --git a/sound/pci/hda/cs35l41_hda_property.c b/sound/pci/hda/cs35l41_hda_property.c
-index b62a4e6968e2..c9eb70290973 100644
---- a/sound/pci/hda/cs35l41_hda_property.c
-+++ b/sound/pci/hda/cs35l41_hda_property.c
-@@ -6,9 +6,300 @@
- //
- // Author: Stefan Binding <sbinding@opensource.cirrus.com>
- 
-+#include <linux/acpi.h>
- #include <linux/gpio/consumer.h>
- #include <linux/string.h>
- #include "cs35l41_hda_property.h"
-+#include <linux/spi/spi.h>
-+
-+#define MAX_AMPS 4
-+
-+struct cs35l41_config {
-+	const char *ssid;
-+	enum {
-+		SPI,
-+		I2C
-+	} bus;
-+	int num_amps;
-+	enum {
-+		INTERNAL,
-+		EXTERNAL
-+	} boost_type;
-+	u8 channel[MAX_AMPS];
-+	int reset_gpio_index; /* -1 if no reset gpio */
-+	int spkid_gpio_index; /* -1 if no spkid gpio */
-+	int cs_gpio_index; /* -1 if no cs gpio, or cs-gpios already exists, max num amps == 2 */
-+	int boost_ind_nanohenry; /* Required if boost_type == Internal */
-+	int boost_peak_milliamp; /* Required if boost_type == Internal */
-+	int boost_cap_microfarad; /* Required if boost_type == Internal */
-+};
-+
-+static const struct cs35l41_config cs35l41_config_table[] = {
-+/*
-+ * Device 103C89C6 does have _DSD, however it is setup to use the wrong boost type.
-+ * We can override the _DSD to correct the boost type here.
-+ * Since this laptop has valid ACPI, we do not need to handle cs-gpios, since that already exists
-+ * in the ACPI. The Reset GPIO is also valid, so we can use the Reset defined in _DSD.
-+ */
-+	{ "103C89C6", SPI, 2, INTERNAL, { CS35L41_RIGHT, CS35L41_LEFT, 0, 0 }, -1, -1, -1, 1000, 4500, 24 },
-+	{ "104312AF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431433", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431463", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431473", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
-+	{ "10431483", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
-+	{ "10431493", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "104314D3", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "104314E3", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431503", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431533", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431573", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431663", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 1000, 4500, 24 },
-+	{ "104316D3", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
-+	{ "104316F3", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
-+	{ "104317F3", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431863", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "104318D3", I2C, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 0, 0, 0 },
-+	{ "10431C9F", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431CAF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431CCF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431CDF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431CEF", SPI, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 1000, 4500, 24 },
-+	{ "10431D1F", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431DA2", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
-+	{ "10431E02", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
-+	{ "10431EE2", I2C, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, -1, -1, 0, 0, 0 },
-+	{ "10431F12", I2C, 2, INTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 0, 1, -1, 1000, 4500, 24 },
-+	{ "10431F1F", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, -1, 0, 0, 0, 0 },
-+	{ "10431F62", SPI, 2, EXTERNAL, { CS35L41_LEFT, CS35L41_RIGHT, 0, 0 }, 1, 2, 0, 0, 0, 0 },
-+	{}
-+};
-+
-+static int cs35l41_add_gpios(struct cs35l41_hda *cs35l41, struct device *physdev, int reset_gpio,
-+			     int spkid_gpio, int cs_gpio_index, int num_amps)
-+{
-+	struct acpi_gpio_mapping *gpio_mapping;
-+	struct acpi_gpio_params *reset_gpio_params;
-+	struct acpi_gpio_params *spkid_gpio_params;
-+	struct acpi_gpio_params *cs_gpio_params;
-+	unsigned int num_entries = 0;
-+	unsigned int reset_index, spkid_index, csgpio_index;
-+	int i;
-+
-+	/*
-+	 * GPIO Mapping only needs to be done once, since it would be available for subsequent amps
-+	 */
-+	if (cs35l41->dacpi->driver_gpios)
-+		return 0;
-+
-+	if (reset_gpio >= 0) {
-+		reset_index = num_entries;
-+		num_entries++;
-+	}
-+
-+	if (spkid_gpio >= 0) {
-+		spkid_index = num_entries;
-+		num_entries++;
-+	}
-+
-+	if ((cs_gpio_index >= 0)  && (num_amps == 2)) {
-+		csgpio_index = num_entries;
-+		num_entries++;
-+	}
-+
-+	if (!num_entries)
-+		return 0;
-+
-+	/* must include termination entry */
-+	num_entries++;
-+
-+	gpio_mapping = devm_kcalloc(physdev, num_entries, sizeof(struct acpi_gpio_mapping),
-+				    GFP_KERNEL);
-+
-+	if (!gpio_mapping)
-+		goto err;
-+
-+	if (reset_gpio >= 0) {
-+		gpio_mapping[reset_index].name = "reset-gpios";
-+		reset_gpio_params = devm_kcalloc(physdev, num_amps, sizeof(struct acpi_gpio_params),
-+						 GFP_KERNEL);
-+		if (!reset_gpio_params)
-+			goto err;
-+
-+		for (i = 0; i < num_amps; i++)
-+			reset_gpio_params[i].crs_entry_index = reset_gpio;
-+
-+		gpio_mapping[reset_index].data = reset_gpio_params;
-+		gpio_mapping[reset_index].size = num_amps;
-+	}
-+
-+	if (spkid_gpio >= 0) {
-+		gpio_mapping[spkid_index].name = "spk-id-gpios";
-+		spkid_gpio_params = devm_kcalloc(physdev, num_amps, sizeof(struct acpi_gpio_params),
-+						 GFP_KERNEL);
-+		if (!spkid_gpio_params)
-+			goto err;
-+
-+		for (i = 0; i < num_amps; i++)
-+			spkid_gpio_params[i].crs_entry_index = spkid_gpio;
-+
-+		gpio_mapping[spkid_index].data = spkid_gpio_params;
-+		gpio_mapping[spkid_index].size = num_amps;
-+	}
-+
-+	if ((cs_gpio_index >= 0) && (num_amps == 2)) {
-+		gpio_mapping[csgpio_index].name = "cs-gpios";
-+		/* only one GPIO CS is supported without using _DSD, obtained using index 0 */
-+		cs_gpio_params = devm_kzalloc(physdev, sizeof(struct acpi_gpio_params), GFP_KERNEL);
-+		if (!cs_gpio_params)
-+			goto err;
-+
-+		cs_gpio_params->crs_entry_index = cs_gpio_index;
-+
-+		gpio_mapping[csgpio_index].data = cs_gpio_params;
-+		gpio_mapping[csgpio_index].size = 1;
-+	}
-+
-+	return devm_acpi_dev_add_driver_gpios(physdev, gpio_mapping);
-+err:
-+	devm_kfree(physdev, gpio_mapping);
-+	devm_kfree(physdev, reset_gpio_params);
-+	devm_kfree(physdev, spkid_gpio_params);
-+	devm_kfree(physdev, cs_gpio_params);
-+	return -ENOMEM;
-+}
-+
-+static int generic_dsd_config(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
-+			      const char *hid)
-+{
-+	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
-+	const struct cs35l41_config *cfg;
-+	struct gpio_desc *cs_gpiod;
-+	struct spi_device *spi;
-+	bool dsd_found;
-+	int ret;
-+
-+	for (cfg = cs35l41_config_table; cfg->ssid; cfg++) {
-+		if (!strcasecmp(cfg->ssid, cs35l41->acpi_subsystem_id))
-+			break;
-+	}
-+
-+	if (!cfg->ssid)
-+		return -ENOENT;
-+
-+	if (!cs35l41->dacpi || cs35l41->dacpi != ACPI_COMPANION(physdev)) {
-+		dev_err(cs35l41->dev, "ACPI Device does not match, cannot override _DSD.\n");
-+		return -ENODEV;
-+	}
-+
-+	dev_info(cs35l41->dev, "Adding DSD properties for %s\n", cs35l41->acpi_subsystem_id);
-+
-+	dsd_found = acpi_dev_has_props(cs35l41->dacpi);
-+
-+	if (!dsd_found) {
-+		ret = cs35l41_add_gpios(cs35l41, physdev, cfg->reset_gpio_index,
-+						 cfg->spkid_gpio_index, cfg->cs_gpio_index,
-+						 cfg->num_amps);
-+		if (ret) {
-+			dev_err(cs35l41->dev, "Error adding GPIO mapping: %d\n", ret);
-+			return ret;
-+		}
-+	} else if (cfg->reset_gpio_index >= 0 || cfg->spkid_gpio_index >= 0) {
-+		dev_warn(cs35l41->dev, "Cannot add Reset/Speaker ID/SPI CS GPIO Mapping, "
-+			 "_DSD already exists.\n");
-+	}
-+
-+	if (cfg->bus == SPI) {
-+		cs35l41->index = id;
-+		/*
-+		 * Manually set the Chip Select for the second amp <cs_gpio_index> in the node.
-+		 * This is only supported for systems with 2 amps, since we cannot expand the
-+		 * default number of chip selects without using cs-gpios
-+		 * The CS GPIO must be set high prior to communicating with the first amp (which
-+		 * uses a native chip select), to ensure the second amp does not clash with the
-+		 * first.
-+		 */
-+		if (cfg->cs_gpio_index >= 0) {
-+			spi = to_spi_device(cs35l41->dev);
-+
-+			if (cfg->num_amps != 2) {
-+				dev_warn(cs35l41->dev,
-+					 "Cannot update SPI CS, Number of Amps (%d) != 2\n",
-+					 cfg->num_amps);
-+			} else if (dsd_found) {
-+				dev_warn(cs35l41->dev,
-+					"Cannot update SPI CS, _DSD already exists.\n");
-+			} else {
-+				/*
-+				 * This is obtained using driver_gpios, since only one GPIO for CS
-+				 * exists, this can be obtained using index 0.
-+				 */
-+				cs_gpiod = gpiod_get_index(physdev, "cs", 0, GPIOD_OUT_LOW);
-+				if (IS_ERR(cs_gpiod)) {
-+					dev_err(cs35l41->dev,
-+						"Unable to get Chip Select GPIO descriptor\n");
-+					return PTR_ERR(cs_gpiod);
-+				}
-+				if (id == 1) {
-+					spi_set_csgpiod(spi, 0, cs_gpiod);
-+					cs35l41->cs_gpio = cs_gpiod;
-+				} else {
-+					gpiod_set_value_cansleep(cs_gpiod, true);
-+					gpiod_put(cs_gpiod);
-+				}
-+				spi_setup(spi);
-+			}
-+		}
-+	} else {
-+		if (cfg->num_amps > 2)
-+			/*
-+			 * i2c addresses for 3/4 amps are used in order: 0x40, 0x41, 0x42, 0x43,
-+			 * subtracting 0x40 would give zero-based index
-+			 */
-+			cs35l41->index = id - 0x40;
-+		else
-+			/* i2c addr 0x40 for first amp (always), 0x41/0x42 for 2nd amp */
-+			cs35l41->index = id == 0x40 ? 0 : 1;
-+	}
-+
-+	if (cfg->num_amps == 3)
-+		/* 3 amps means a center channel, so no duplicate channels */
-+		cs35l41->channel_index = 0;
-+	else
-+		/*
-+		 * if 4 amps, there are duplicate channels, so they need different indexes
-+		 * if 2 amps, no duplicate channels, channel_index would be 0
-+		 */
-+		cs35l41->channel_index = cs35l41->index / 2;
-+
-+	cs35l41->reset_gpio = fwnode_gpiod_get_index(acpi_fwnode_handle(cs35l41->dacpi), "reset",
-+						     cs35l41->index, GPIOD_OUT_LOW,
-+						     "cs35l41-reset");
-+	cs35l41->speaker_id = cs35l41_get_speaker_id(physdev, cs35l41->index, cfg->num_amps, -1);
-+
-+	hw_cfg->spk_pos = cfg->channel[cs35l41->index];
-+
-+	if (cfg->boost_type == INTERNAL) {
-+		hw_cfg->bst_type = CS35L41_INT_BOOST;
-+		hw_cfg->bst_ind = cfg->boost_ind_nanohenry;
-+		hw_cfg->bst_ipk = cfg->boost_peak_milliamp;
-+		hw_cfg->bst_cap = cfg->boost_cap_microfarad;
-+		hw_cfg->gpio1.func = CS35L41_NOT_USED;
-+		hw_cfg->gpio1.valid = true;
-+	} else {
-+		hw_cfg->bst_type = CS35L41_EXT_BOOST;
-+		hw_cfg->bst_ind = -1;
-+		hw_cfg->bst_ipk = -1;
-+		hw_cfg->bst_cap = -1;
-+		hw_cfg->gpio1.func = CS35l41_VSPK_SWITCH;
-+		hw_cfg->gpio1.valid = true;
-+	}
-+
-+	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
-+	hw_cfg->gpio2.valid = true;
-+	hw_cfg->valid = true;
-+
-+	return 0;
-+}
- 
- /*
-  * Device CLSA010(0/1) doesn't have _DSD so a gpiod_get by the label reset won't work.
-@@ -43,37 +334,6 @@ static int lenovo_legion_no_acpi(struct cs35l41_hda *cs35l41, struct device *phy
- 	return 0;
- }
- 
--/*
-- * Device 103C89C6 does have _DSD, however it is setup to use the wrong boost type.
-- * We can override the _DSD to correct the boost type here.
-- * Since this laptop has valid ACPI, we do not need to handle cs-gpios, since that already exists
-- * in the ACPI.
-- */
--static int hp_vision_acpi_fix(struct cs35l41_hda *cs35l41, struct device *physdev, int id,
--			      const char *hid)
--{
--	struct cs35l41_hw_cfg *hw_cfg = &cs35l41->hw_cfg;
--
--	dev_info(cs35l41->dev, "Adding DSD properties for %s\n", cs35l41->acpi_subsystem_id);
--
--	cs35l41->index = id;
--	cs35l41->channel_index = 0;
--	cs35l41->reset_gpio = gpiod_get_index(physdev, NULL, 1, GPIOD_OUT_HIGH);
--	cs35l41->speaker_id = -ENOENT;
--	hw_cfg->spk_pos = cs35l41->index ? 1 : 0; // right:left
--	hw_cfg->gpio1.func = CS35L41_NOT_USED;
--	hw_cfg->gpio1.valid = true;
--	hw_cfg->gpio2.func = CS35L41_INTERRUPT;
--	hw_cfg->gpio2.valid = true;
--	hw_cfg->bst_type = CS35L41_INT_BOOST;
--	hw_cfg->bst_ind = 1000;
--	hw_cfg->bst_ipk = 4500;
--	hw_cfg->bst_cap = 24;
--	hw_cfg->valid = true;
--
--	return 0;
--}
--
- struct cs35l41_prop_model {
- 	const char *hid;
- 	const char *ssid;
-@@ -84,7 +344,36 @@ struct cs35l41_prop_model {
- static const struct cs35l41_prop_model cs35l41_prop_model_table[] = {
- 	{ "CLSA0100", NULL, lenovo_legion_no_acpi },
- 	{ "CLSA0101", NULL, lenovo_legion_no_acpi },
--	{ "CSC3551", "103C89C6", hp_vision_acpi_fix },
-+	{ "CSC3551", "103C89C6", generic_dsd_config },
-+	{ "CSC3551", "104312AF", generic_dsd_config },
-+	{ "CSC3551", "10431433", generic_dsd_config },
-+	{ "CSC3551", "10431463", generic_dsd_config },
-+	{ "CSC3551", "10431473", generic_dsd_config },
-+	{ "CSC3551", "10431483", generic_dsd_config },
-+	{ "CSC3551", "10431493", generic_dsd_config },
-+	{ "CSC3551", "104314D3", generic_dsd_config },
-+	{ "CSC3551", "104314E3", generic_dsd_config },
-+	{ "CSC3551", "10431503", generic_dsd_config },
-+	{ "CSC3551", "10431533", generic_dsd_config },
-+	{ "CSC3551", "10431573", generic_dsd_config },
-+	{ "CSC3551", "10431663", generic_dsd_config },
-+	{ "CSC3551", "104316D3", generic_dsd_config },
-+	{ "CSC3551", "104316F3", generic_dsd_config },
-+	{ "CSC3551", "104317F3", generic_dsd_config },
-+	{ "CSC3551", "10431863", generic_dsd_config },
-+	{ "CSC3551", "104318D3", generic_dsd_config },
-+	{ "CSC3551", "10431C9F", generic_dsd_config },
-+	{ "CSC3551", "10431CAF", generic_dsd_config },
-+	{ "CSC3551", "10431CCF", generic_dsd_config },
-+	{ "CSC3551", "10431CDF", generic_dsd_config },
-+	{ "CSC3551", "10431CEF", generic_dsd_config },
-+	{ "CSC3551", "10431D1F", generic_dsd_config },
-+	{ "CSC3551", "10431DA2", generic_dsd_config },
-+	{ "CSC3551", "10431E02", generic_dsd_config },
-+	{ "CSC3551", "10431EE2", generic_dsd_config },
-+	{ "CSC3551", "10431F12", generic_dsd_config },
-+	{ "CSC3551", "10431F1F", generic_dsd_config },
-+	{ "CSC3551", "10431F62", generic_dsd_config },
- 	{}
- };
- 
-@@ -97,7 +386,7 @@ int cs35l41_add_dsd_properties(struct cs35l41_hda *cs35l41, struct device *physd
- 		if (!strcmp(model->hid, hid) &&
- 		    (!model->ssid ||
- 		     (cs35l41->acpi_subsystem_id &&
--		      !strcmp(model->ssid, cs35l41->acpi_subsystem_id))))
-+		      !strcasecmp(model->ssid, cs35l41->acpi_subsystem_id))))
- 			return model->add_prop(cs35l41, physdev, id, hid);
- 	}
- 
-diff --git a/sound/pci/hda/hda_component.h b/sound/pci/hda/hda_component.h
-index f170aec967c1..bbd6f0ed16c1 100644
---- a/sound/pci/hda/hda_component.h
-+++ b/sound/pci/hda/hda_component.h
-@@ -6,6 +6,7 @@
-  *                    Cirrus Logic International Semiconductor Ltd.
-  */
- 
-+#include <linux/acpi.h>
- #include <linux/component.h>
- 
- #define HDA_MAX_COMPONENTS	4
-@@ -15,6 +16,9 @@ struct hda_component {
- 	struct device *dev;
- 	char name[HDA_MAX_NAME_SIZE];
- 	struct hda_codec *codec;
-+	struct acpi_device *adev;
-+	bool acpi_notifications_supported;
-+	void (*acpi_notify)(acpi_handle handle, u32 event, struct device *dev);
- 	void (*pre_playback_hook)(struct device *dev, int action);
- 	void (*playback_hook)(struct device *dev, int action);
- 	void (*post_playback_hook)(struct device *dev, int action);
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 375569d0864b..cfe4a3b588dd 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -9873,22 +9873,28 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
- 	SND_PCI_QUIRK(0x1043, 0x13b0, "ASUS Z550SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1427, "Asus Zenbook UX31E", ALC269VB_FIXUP_ASUS_ZENBOOK),
--	SND_PCI_QUIRK(0x1043, 0x1433, "ASUS GX650P", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1463, "Asus GA402X", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1473, "ASUS GU604V", ALC285_FIXUP_ASUS_HEADSET_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1483, "ASUS GU603V", ALC285_FIXUP_ASUS_HEADSET_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1493, "ASUS GV601V", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1433, "ASUS GX650PY/PZ/PV/PU/PYV/PZV/PIV/PVV", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1463, "Asus GA402X/GA402N", ALC285_FIXUP_ASUS_I2C_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1473, "ASUS GU604VI/VC/VE/VG/VJ/VQ/VU/VV/VY/VZ", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1483, "ASUS GU603VQ/VU/VV/VJ/VI", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1493, "ASUS GV601VV/VU/VJ/VQ/VI", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x14d3, "ASUS G614JY/JZ/JG", ALC245_FIXUP_CS35L41_SPI_2),
-+	SND_PCI_QUIRK(0x1043, 0x14e3, "ASUS G513PI/PU/PV", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x1043, 0x1503, "ASUS G733PY/PZ/PZV/PYV", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x1043, 0x1517, "Asus Zenbook UX31A", ALC269VB_FIXUP_ASUS_ZENBOOK_UX31A),
--	SND_PCI_QUIRK(0x1043, 0x1533, "ASUS GV302XA", ALC287_FIXUP_CS35L41_I2C_2),
--	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301V", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1533, "ASUS GV302XA/XJ/XQ/XU/XV/XI", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x1043, 0x1573, "ASUS GZ301VV/VQ/VU/VJ/VA/VC/VE/VVC/VQC/VUC/VJC/VEC/VCC", ALC285_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1662, "ASUS GV301QH", ALC294_FIXUP_ASUS_DUAL_SPK),
--	SND_PCI_QUIRK(0x1043, 0x1663, "ASUS GU603ZV", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1663, "ASUS GU603ZI/ZJ/ZQ/ZU/ZV", ALC285_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x1683, "ASUS UM3402YAR", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x1043, 0x16b2, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
-+	SND_PCI_QUIRK(0x1043, 0x16d3, "ASUS UX5304VA", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x16e3, "ASUS UX50", ALC269_FIXUP_STEREO_DMIC),
-+	SND_PCI_QUIRK(0x1043, 0x16f3, "ASUS UX7602VI/BZ", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1740, "ASUS UX430UA", ALC295_FIXUP_ASUS_DACS),
- 	SND_PCI_QUIRK(0x1043, 0x17d1, "ASUS UX431FL", ALC294_FIXUP_ASUS_DUAL_SPK),
--	SND_PCI_QUIRK(0x1043, 0x17f3, "ROG Ally RC71L_RC71L", ALC294_FIXUP_ASUS_ALLY),
-+	SND_PCI_QUIRK(0x1043, 0x17f3, "ROG Ally NR2301L/X", ALC294_FIXUP_ASUS_ALLY),
-+	SND_PCI_QUIRK(0x1043, 0x1863, "ASUS UX6404VI/VV", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x18d3, "ASUS UM3504DA", ALC294_FIXUP_CS35L41_I2C_2),
-@@ -9913,10 +9919,13 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1c43, "ASUS UX8406MA", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1c62, "ASUS GU603", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1c92, "ASUS ROG Strix G15", ALC285_FIXUP_ASUS_G533Z_PINS),
--	SND_PCI_QUIRK(0x1043, 0x1c9f, "ASUS G614JI", ALC285_FIXUP_ASUS_HEADSET_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1caf, "ASUS G634JYR/JZR", ALC285_FIXUP_ASUS_SPI_REAR_SPEAKERS),
-+	SND_PCI_QUIRK(0x1043, 0x1c9f, "ASUS G614JU/JV/JI", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1caf, "ASUS G634JY/JZ/JI/JG", ALC285_FIXUP_ASUS_SPI_REAR_SPEAKERS),
- 	SND_PCI_QUIRK(0x1043, 0x1ccd, "ASUS X555UB", ALC256_FIXUP_ASUS_MIC),
--	SND_PCI_QUIRK(0x1043, 0x1d1f, "ASUS ROG Strix G17 2023 (G713PV)", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x1043, 0x1ccf, "ASUS G814JU/JV/JI", ALC245_FIXUP_CS35L41_SPI_2),
-+	SND_PCI_QUIRK(0x1043, 0x1cdf, "ASUS G814JY/JZ/JG", ALC245_FIXUP_CS35L41_SPI_2),
-+	SND_PCI_QUIRK(0x1043, 0x1cef, "ASUS G834JY/JZ/JI/JG", ALC285_FIXUP_ASUS_HEADSET_MIC),
-+	SND_PCI_QUIRK(0x1043, 0x1d1f, "ASUS G713PI/PU/PV/PVN", ALC287_FIXUP_CS35L41_I2C_2),
- 	SND_PCI_QUIRK(0x1043, 0x1d42, "ASUS Zephyrus G14 2022", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1d4e, "ASUS TM420", ALC256_FIXUP_ASUS_HPE),
- 	SND_PCI_QUIRK(0x1043, 0x1da2, "ASUS UP6502ZA/ZD", ALC245_FIXUP_CS35L41_SPI_2),
-@@ -9932,6 +9941,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1c52, "ASUS Zephyrus G15 2022", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1f11, "ASUS Zephyrus G14", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x1f12, "ASUS UM5302", ALC287_FIXUP_CS35L41_I2C_2),
-+	SND_PCI_QUIRK(0x1043, 0x1f1f, "ASUS H7604JI/JV/J3D", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1f62, "ASUS UX7602ZM", ALC245_FIXUP_CS35L41_SPI_2),
- 	SND_PCI_QUIRK(0x1043, 0x1f92, "ASUS ROG Flow X16", ALC289_FIXUP_ASUS_GA401),
- 	SND_PCI_QUIRK(0x1043, 0x3030, "ASUS ZN270IE", ALC256_FIXUP_ASUS_AIO_GPIO2),
+ PACKAGE =			cpupower
+ PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org
