@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc2.20240130git861c0981648f.20
+%define pkgrelease 0.rc2.20240201git6764c317b6bb.22
 %define kversion 6
-%define tarfile_release 6.8-rc2-31-g861c0981648f
+%define tarfile_release 6.8-rc2-55-g6764c317b6bb
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20240130git861c0981648f.20%{?buildid}%{?dist}
+%define specrelease 0.rc2.20240201git6764c317b6bb.22%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -301,11 +301,6 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no stablelist
 %define with_kernel_abi_stablelists 0
-# Fedora builds these separately
-%define with_perf 1
-%define with_libperf 1
-%define with_tools 1
-%define with_bpftool 1
 # No realtime fedora variants
 %define with_realtime 0
 %define with_arm64_64k 0
@@ -3843,11 +3838,18 @@ fi\
 #
 #
 %changelog
-* Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.20]
+* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.22]
+- Remove defines forcing tools on, they override cmdline (Justin M. Forbes)
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+
+* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.21]
+- Linux v6.8.0-0.rc2.6764c317b6bb
+
+* Wed Jan 31 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.1bbb19b6eb1b.20]
+- Linux v6.8.0-0.rc2.1bbb19b6eb1b
 
 * Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.19]
 - Linux v6.8.0-0.rc2.861c0981648f

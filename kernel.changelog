@@ -1,8 +1,17 @@
-* Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.20]
+* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.22]
+- Remove defines forcing tools on, they override cmdline (Justin M. Forbes)
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+Resolves: 
+
+* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.21]
+- Linux v6.8.0-0.rc2.6764c317b6bb
+Resolves: 
+
+* Wed Jan 31 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.1bbb19b6eb1b.20]
+- Linux v6.8.0-0.rc2.1bbb19b6eb1b
 Resolves: 
 
 * Tue Jan 30 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.861c0981648f.19]
