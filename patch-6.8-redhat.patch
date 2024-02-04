@@ -71,7 +71,9 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- 73 files changed, 2115 insertions(+), 207 deletions(-)
+ tools/tracing/rtla/Makefile                        |   7 +-
+ tools/verification/rv/Makefile                     |   7 +-
+ 75 files changed, 2127 insertions(+), 209 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 31b3a25680d0..52ff60af2044 100644
@@ -136,7 +138,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6c0a4d294444..399bf8d1c14b 100644
+index a171eafce2a3..b33dad36cfa8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1565,7 +1567,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 68e648b55767..b270026ba0ca 100644
+index d14413916f93..ff6cbc3fa509 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1576,7 +1578,7 @@ index 68e648b55767..b270026ba0ca 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -3087,6 +3088,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -3095,6 +3096,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -1682,7 +1684,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 85ab0fcf9e88..7b61fa7255d3 100644
+index 0d124a8ca9c3..fb3ade9a09b0 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1695,7 +1697,7 @@ index 85ab0fcf9e88..7b61fa7255d3 100644
  	switch (status & 0x7ff) {
  	case NVME_SC_SUCCESS:
  		return BLK_STS_OK;
-@@ -342,6 +345,7 @@ enum nvme_disposition {
+@@ -366,6 +369,7 @@ enum nvme_disposition {
  	COMPLETE,
  	RETRY,
  	FAILOVER,
@@ -1703,7 +1705,7 @@ index 85ab0fcf9e88..7b61fa7255d3 100644
  	AUTHENTICATE,
  };
  
-@@ -353,15 +357,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+@@ -377,15 +381,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
  	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
  		return AUTHENTICATE;
  
@@ -1723,7 +1725,7 @@ index 85ab0fcf9e88..7b61fa7255d3 100644
  	} else {
  		if (blk_queue_dying(req->q))
  			return COMPLETE;
-@@ -394,6 +399,14 @@ static inline void nvme_end_req(struct request *req)
+@@ -422,6 +427,14 @@ static inline void nvme_end_req(struct request *req)
  	blk_mq_end_request(req, status);
  }
  
@@ -1738,7 +1740,7 @@ index 85ab0fcf9e88..7b61fa7255d3 100644
  void nvme_complete_rq(struct request *req)
  {
  	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -423,6 +436,9 @@ void nvme_complete_rq(struct request *req)
+@@ -451,6 +464,9 @@ void nvme_complete_rq(struct request *req)
  	case FAILOVER:
  		nvme_failover_req(req);
  		return;
@@ -1749,7 +1751,7 @@ index 85ab0fcf9e88..7b61fa7255d3 100644
  #ifdef CONFIG_NVME_HOST_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 2dd4137a08b2..9b14eb637003 100644
+index 74de1e64aeea..1b0e59c232f8 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1785,7 +1787,7 @@ index 2dd4137a08b2..9b14eb637003 100644
  
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -912,8 +918,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -913,8 +919,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
  
  	/* check if multipath is enabled and we have the capability */
@@ -1796,10 +1798,10 @@ index 2dd4137a08b2..9b14eb637003 100644
  
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 030c80818240..f37d3ac77cdf 100644
+index 3897334e3950..5d321f2116a6 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -902,6 +902,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -919,6 +919,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1807,7 +1809,7 @@ index 030c80818240..f37d3ac77cdf 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -944,6 +945,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -961,6 +962,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -2160,10 +2162,10 @@ index 0833b3e6aa6e..104f819ce813 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index ffd7c99e24a3..da409b3d491b 100644
+index e38a4124f610..0a607946e5f9 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5788,6 +5788,13 @@ static void hub_event(struct work_struct *work)
+@@ -5806,6 +5806,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -2219,7 +2221,7 @@ index 5f60f163bd56..6352c3cf4c3c 100644
  }
  
 diff --git a/fs/ext4/super.c b/fs/ext4/super.c
-index dcba0f85dfe2..f5201dbb73a6 100644
+index 0f931d0c227d..e0234d6f4157 100644
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
 @@ -5610,6 +5610,17 @@ static int __ext4_fill_super(struct fs_context *fc, struct super_block *sb)
@@ -2344,7 +2346,7 @@ index d9ad21058eed..4424db2f92f5 100644
 +
  #endif
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 185924c56378..8b4b5b42946a 100644
+index 76458b6d53da..b80d5835be72 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -411,6 +411,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -2407,10 +2409,10 @@ index 6717b15e798c..8e1d3eae1686 100644
  
  struct taint_flag {
 diff --git a/include/linux/pci.h b/include/linux/pci.h
-index add9368e6314..a278f78f7ac8 100644
+index 7ab0d13672da..c39d66bd2123 100644
 --- a/include/linux/pci.h
 +++ b/include/linux/pci.h
-@@ -1620,6 +1620,7 @@ int pci_add_dynid(struct pci_driver *drv,
+@@ -1621,6 +1621,7 @@ int pci_add_dynid(struct pci_driver *drv,
  		  unsigned long driver_data);
  const struct pci_device_id *pci_match_id(const struct pci_device_id *ids,
  					 struct pci_dev *dev);
@@ -2418,7 +2420,7 @@ index add9368e6314..a278f78f7ac8 100644
  int pci_scan_bridge(struct pci_bus *bus, struct pci_dev *dev, int max,
  		    int pass);
  
-@@ -2676,6 +2677,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+@@ -2681,6 +2682,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
  	return false;
  }
  
@@ -3728,7 +3730,7 @@ index 000000000000..616692b1ac11
 +
 +#endif /* __RH_MESSAGES_H */
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 795b21154446..9b9b8ef568fb 100644
+index 267b9a0a3abc..12612f58ca58 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -3739,7 +3741,7 @@ index 795b21154446..9b9b8ef568fb 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -2001,6 +2002,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1992,6 +1993,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -3752,7 +3754,7 @@ index 795b21154446..9b9b8ef568fb 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2061,6 +2068,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2052,6 +2059,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -3834,10 +3836,10 @@ index cd84d8ea1dfb..e4c70a0312bc 100644
  
  const struct lsm_id lockdown_lsmid = {
 diff --git a/security/security.c b/security/security.c
-index 0144a98d3712..b2605b733410 100644
+index 3aaad75c9ce8..8c043d7957a8 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5473,6 +5473,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5508,6 +5508,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  
@@ -3856,3 +3858,45 @@ index 0144a98d3712..b2605b733410 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 2456a399eb9a..afd18c678ff5 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -28,10 +28,15 @@ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
+ 		-fasynchronous-unwind-tables -fstack-clash-protection
+ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
+ 
++ifeq ($(CC),clang)
++  FOPTS := $(filter-out -ffat-lto-objects, $(FOPTS))
++  WOPTS := $(filter-out -Wno-maybe-uninitialized, $(WOPTS))
++endif
++
+ TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
+ 
+ CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS)
+-LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
++LDFLAGS	:=	-flto=auto -ggdb $(EXTRA_LDFLAGS)
+ LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
+ 
+ SRC	:=	$(wildcard src/*.c)
+diff --git a/tools/verification/rv/Makefile b/tools/verification/rv/Makefile
+index 3d0f3888a58c..485f8aeddbe0 100644
+--- a/tools/verification/rv/Makefile
++++ b/tools/verification/rv/Makefile
+@@ -28,10 +28,15 @@ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
+ 		-fasynchronous-unwind-tables -fstack-clash-protection
+ WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
+ 
++ifeq ($(CC),clang)
++  FOPTS := $(filter-out -ffat-lto-objects, $(FOPTS))
++  WOPTS := $(filter-out -Wno-maybe-uninitialized, $(WOPTS))
++endif
++
+ TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
+ 
+ CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS) -I include
+-LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
++LDFLAGS	:=	-flto=auto -ggdb $(EXTRA_LDFLAGS)
+ LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
+ 
+ SRC	:=	$(wildcard src/*.c)

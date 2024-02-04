@@ -1,9 +1,31 @@
-* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.22]
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.26]
+- tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+- tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+Resolves: 
+
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.25]
 - Remove defines forcing tools on, they override cmdline (Justin M. Forbes)
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+- Linux v6.8.0-0.rc3
+Resolves: 
+
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.3f24fcdacd40.24]
+- Linux v6.8.0-0.rc2.3f24fcdacd40
+Resolves: 
+
+* Sat Feb 03 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.56897d51886f.23]
+- Add scaffolding to build the kernel-headers package for Fedora (Justin M. Forbes)
+- redhat/spec: use distro CFLAGS when building bootstrap bpftool (Artem Savkov)
+- spec: use just-built bpftool for vmlinux.h generation (Yauheni Kaliuta) [2120968]
+- gitlab-ci: enable native tools for Rawhide CI (Michael Hofmann)
+- Linux v6.8.0-0.rc2.56897d51886f
+Resolves: rhbz#2120968
+
+* Fri Feb 02 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.021533194476.22]
+- Linux v6.8.0-0.rc2.021533194476
 Resolves: 
 
 * Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.21]

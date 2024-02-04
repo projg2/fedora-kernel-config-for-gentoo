@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc2.20240201git6764c317b6bb.22
+%define pkgrelease 0.rc3.26
 %define kversion 6
-%define tarfile_release 6.8-rc2-55-g6764c317b6bb
+%define tarfile_release 6.8-rc3
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc2.20240201git6764c317b6bb.22%{?buildid}%{?dist}
+%define specrelease 0.rc3.26%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -669,9 +669,6 @@ BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
-%ifnarch %{nobuildarches} noarch
-BuildRequires: bpftool
-%endif
 %if %{with_headers}
 BuildRequires: rsync
 %endif
@@ -2636,7 +2633,12 @@ BuildKernel() {
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
     if [ "$Variant" != "zfcpdump" ]; then
-        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+        # Build the bootstrap bpftool to generate vmlinux.h
+        export BPFBOOTSTRAP_CFLAGS=$(echo "%{__global_compiler_flags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+        export BPFBOOTSTRAP_LDFLAGS=$(echo "%{__global_ldflags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+        CFLAGS="" LDFLAGS="" make EXTRA_CFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_LDFLAGS="${BPFBOOTSTRAP_LDFLAGS}" %{?make_opts} %{?clang_make_opts} V=1 -C tools/bpf/bpftool bootstrap
+
+        tools/bpf/bpftool/bootstrap/bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
     fi
 
     # prune junk from kernel-devel
@@ -2691,7 +2693,6 @@ mkdir -p $RPM_BUILD_ROOT/boot
 mkdir -p $RPM_BUILD_ROOT%{_libexecdir}
 
 cd linux-%{KVERREL}
-
 
 %if %{with_debug}
 %if %{with_realtime}
@@ -3838,12 +3839,30 @@ fi\
 #
 #
 %changelog
-* Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.22]
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.26]
+- tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+- tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.25]
 - Remove defines forcing tools on, they override cmdline (Justin M. Forbes)
 - Remove separate license tag for libperf (Justin M. Forbes)
 - Don't use upstream bpftool version for Fedora package (Justin M. Forbes)
 - Don't ship libperf.a in libperf-devel (Justin M. Forbes)
 - add libperf packages and enable perf, libperf, tools and bpftool packages (Thorsten Leemhuis)
+- Linux v6.8.0-0.rc3
+
+* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.3f24fcdacd40.24]
+- Linux v6.8.0-0.rc2.3f24fcdacd40
+
+* Sat Feb 03 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.56897d51886f.23]
+- Add scaffolding to build the kernel-headers package for Fedora (Justin M. Forbes)
+- redhat/spec: use distro CFLAGS when building bootstrap bpftool (Artem Savkov)
+- spec: use just-built bpftool for vmlinux.h generation (Yauheni Kaliuta) [2120968]
+- gitlab-ci: enable native tools for Rawhide CI (Michael Hofmann)
+- Linux v6.8.0-0.rc2.56897d51886f
+
+* Fri Feb 02 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.021533194476.22]
+- Linux v6.8.0-0.rc2.021533194476
 
 * Thu Feb 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc2.6764c317b6bb.21]
 - Linux v6.8.0-0.rc2.6764c317b6bb
