@@ -1,3 +1,10 @@
+* Mon Feb 05 2024 Augusto Caringi <acaringi@redhat.com> [6.7.4-0]
+- Add keyboard resume bugfixes (Justin M. Forbes)
+- Input: atkbd - do not skip atkbd_deactivate() when skipping ATKBD_CMD_GETID (Hans de Goede)
+- Input: atkbd - skip ATKBD_CMD_SETLEDS when skipping ATKBD_CMD_GETID (Hans de Goede)
+- Linux v6.7.4
+Resolves: 
+
 * Wed Jan 31 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.3-0]
 - Config update for stable backport (Justin M. Forbes)
 - Add some more bugs to BugsFixed (Justin M. Forbes)
