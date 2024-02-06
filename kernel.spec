@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc3.26
+%define pkgrelease 0.rc3.20240206git99bd3cb0d12e.27
 %define kversion 6
-%define tarfile_release 6.8-rc3
+%define tarfile_release 6.8-rc3-5-g99bd3cb0d12e
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.26%{?buildid}%{?dist}
+%define specrelease 0.rc3.20240206git99bd3cb0d12e.27%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,9 +3839,12 @@ fi\
 #
 #
 %changelog
-* Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.26]
+* Tue Feb 06 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.99bd3cb0d12e.27]
 - tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
 - tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Tue Feb 06 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.99bd3cb0d12e.26]
+- Linux v6.8.0-0.rc3.99bd3cb0d12e
 
 * Sun Feb 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.25]
 - Remove defines forcing tools on, they override cmdline (Justin M. Forbes)
