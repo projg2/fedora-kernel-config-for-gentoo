@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc3.20240207git6d280f4d760e.28
+%define pkgrelease 0.rc3.20240207git6d280f4d760e.29
 %define kversion 6
 %define tarfile_release 6.8-rc3-10-g6d280f4d760e
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20240207git6d280f4d760e.28%{?buildid}%{?dist}
+%define specrelease 0.rc3.20240207git6d280f4d760e.29%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,9 +3839,15 @@ fi\
 #
 #
 %changelog
-* Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.28]
+* Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.29]
+- DO NOT MERGE: Revert Fix cursor planes with virtualized drivers series (Justin M. Forbes)
 - tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
 - tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.28]
+- gitlab-ci: merge ark-latest fixes when running ELN pipelines (Michael Hofmann)
+- gitlab-ci: use all arches for container image gating (Michael Hofmann)
+- Add new os-build targets: rt-devel and automotive-devel (Don Zickus)
 
 * Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.27]
 - Linux v6.8.0-0.rc3.6d280f4d760e
