@@ -1,8 +1,8 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/3dd8fa490524bf066c3b6d50da35c58ea8e84f28
- 3dd8fa490524bf066c3b6d50da35c58ea8e84f28 tools/rv: Fix Makefile compiler options for clang
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b1947a094b32bbeb06e8229defd0a4cb51051627
+ b1947a094b32bbeb06e8229defd0a4cb51051627 tools/rv: Fix Makefile compiler options for clang
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/030df72a35628bde7a328b93ef373e2c7a1c65ce
- 030df72a35628bde7a328b93ef373e2c7a1c65ce tools/rtla: Fix Makefile compiler options for clang
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/726d164261d0be09003a3e073c3d52637395d993
+ 726d164261d0be09003a3e073c3d52637395d993 tools/rtla: Fix Makefile compiler options for clang
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/00b18a7e395433017c0eabdd14a7c3db2c6d4d9a
  00b18a7e395433017c0eabdd14a7c3db2c6d4d9a Fix up manual merge error in security.h
