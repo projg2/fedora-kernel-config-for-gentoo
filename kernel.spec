@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc3.20240207git6d280f4d760e.29
+%define pkgrelease 0.rc3.20240208git047371968ffc.30
 %define kversion 6
-%define tarfile_release 6.8-rc3-10-g6d280f4d760e
+%define tarfile_release 6.8-rc3-47-g047371968ffc
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20240207git6d280f4d760e.29%{?buildid}%{?dist}
+%define specrelease 0.rc3.20240208git047371968ffc.30%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,10 +3839,13 @@ fi\
 #
 #
 %changelog
-* Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.29]
+* Thu Feb 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.047371968ffc.30]
 - DO NOT MERGE: Revert Fix cursor planes with virtualized drivers series (Justin M. Forbes)
 - tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
 - tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Thu Feb 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.047371968ffc.29]
+- Linux v6.8.0-0.rc3.047371968ffc
 
 * Wed Feb 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.6d280f4d760e.28]
 - gitlab-ci: merge ark-latest fixes when running ELN pipelines (Michael Hofmann)
