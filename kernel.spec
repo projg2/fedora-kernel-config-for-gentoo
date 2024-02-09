@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc3.20240208git047371968ffc.30
+%define pkgrelease 0.rc3.20240209git1f719a2f3fa6.31
 %define kversion 6
-%define tarfile_release 6.8-rc3-47-g047371968ffc
+%define tarfile_release 6.8-rc3-136-g1f719a2f3fa6
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20240208git047371968ffc.30%{?buildid}%{?dist}
+%define specrelease 0.rc3.20240209git1f719a2f3fa6.31%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,10 +3839,12 @@ fi\
 #
 #
 %changelog
-* Thu Feb 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.047371968ffc.30]
-- DO NOT MERGE: Revert Fix cursor planes with virtualized drivers series (Justin M. Forbes)
+* Fri Feb 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.1f719a2f3fa6.31]
 - tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
 - tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Fri Feb 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.1f719a2f3fa6.30]
+- Linux v6.8.0-0.rc3.1f719a2f3fa6
 
 * Thu Feb 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.047371968ffc.29]
 - Linux v6.8.0-0.rc3.047371968ffc

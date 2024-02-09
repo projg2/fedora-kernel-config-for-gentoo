@@ -1,11 +1,8 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/7abdc6e12ba9421fe79812c383e31ea67422851a
- 7abdc6e12ba9421fe79812c383e31ea67422851a DO NOT MERGE: Revert Fix cursor planes with virtualized drivers series
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/cb2190c6706912305dbb380560045efcf5c5359b
+ cb2190c6706912305dbb380560045efcf5c5359b tools/rv: Fix Makefile compiler options for clang
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/3931c85ba3d1631bece283f44cf72d20e3a249e6
- 3931c85ba3d1631bece283f44cf72d20e3a249e6 tools/rv: Fix Makefile compiler options for clang
-
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/53ce3512ea2f0956fecde06146e42fdd23ff6b4b
- 53ce3512ea2f0956fecde06146e42fdd23ff6b4b tools/rtla: Fix Makefile compiler options for clang
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9c6d1699c15a5050dd1e028976e7d516db53c149
+ 9c6d1699c15a5050dd1e028976e7d516db53c149 tools/rtla: Fix Makefile compiler options for clang
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/00b18a7e395433017c0eabdd14a7c3db2c6d4d9a
  00b18a7e395433017c0eabdd14a7c3db2c6d4d9a Fix up manual merge error in security.h
