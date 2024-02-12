@@ -1,8 +1,11 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/cb2190c6706912305dbb380560045efcf5c5359b
- cb2190c6706912305dbb380560045efcf5c5359b tools/rv: Fix Makefile compiler options for clang
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6258d6f516bdc2424e858f302aabac9e566abfa7
+ 6258d6f516bdc2424e858f302aabac9e566abfa7 tools/rv: Fix Makefile compiler options for clang
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/9c6d1699c15a5050dd1e028976e7d516db53c149
- 9c6d1699c15a5050dd1e028976e7d516db53c149 tools/rtla: Fix Makefile compiler options for clang
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/46903099542c97528e24cd43d6e0d7767bbf74f0
+ 46903099542c97528e24cd43d6e0d7767bbf74f0 tools/rtla: Fix Makefile compiler options for clang
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c370fa183583a96b50f77b356a66bad850d2cc49
+ c370fa183583a96b50f77b356a66bad850d2cc49 arch/x86: mark x86_64-v1 and x86_64-v2 processors as deprecated
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/00b18a7e395433017c0eabdd14a7c3db2c6d4d9a
  00b18a7e395433017c0eabdd14a7c3db2c6d4d9a Fix up manual merge error in security.h

@@ -8,7 +8,7 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            |  68 ++-
+ arch/x86/kernel/setup.c                            |  98 +++-
  crypto/drbg.c                                      |  18 +-
  crypto/rng.c                                       | 149 +++++-
  drivers/acpi/apei/hest.c                           |   8 +
@@ -48,7 +48,7 @@
  fs/ext4/super.c                                    |  11 +
  include/linux/crypto.h                             |   1 +
  include/linux/efi.h                                |  22 +-
- include/linux/kernel.h                             |  14 +
+ include/linux/kernel.h                             |  16 +
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   5 +
  include/linux/panic.h                              |  18 +-
@@ -73,7 +73,7 @@
  security/security.c                                |  12 +
  tools/tracing/rtla/Makefile                        |   7 +-
  tools/verification/rv/Makefile                     |   7 +-
- 75 files changed, 2127 insertions(+), 209 deletions(-)
+ 75 files changed, 2159 insertions(+), 209 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 31b3a25680d0..52ff60af2044 100644
@@ -138,7 +138,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index a171eafce2a3..b33dad36cfa8 100644
+index 7e0b2ad98905..471aa68c5ab6 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -264,7 +264,7 @@ index 0b97bcde70c6..c624a2bee5f8 100644
  		cpu_parse_early_param();
  
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 84201071dfac..f8e3f192df8d 100644
+index 84201071dfac..d00c2713281e 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -283,7 +283,7 @@ index 84201071dfac..f8e3f192df8d 100644
  
  /*
   * max_low_pfn_mapped: highest directly mapped pfn < 4 GB
-@@ -668,6 +670,49 @@ static void __init early_reserve_memory(void)
+@@ -668,6 +670,79 @@ static void __init early_reserve_memory(void)
  	trim_snb_memory();
  }
  
@@ -325,6 +325,36 @@ index 84201071dfac..f8e3f192df8d 100644
 +	 */
 +	if (acpi_disabled && !guest)
 +		pr_crit("ACPI has been disabled or is not available on this hardware.  This may result in a single cpu boot, incorrect PCI IRQ routing, or boot failure.\n");
++
++	/*
++	 * x86_64 microarchitecture levels:
++	 * 	https://en.wikipedia.org/wiki/X86-64#Microarchitecture_levels
++	 *
++	 * RHEL9 has a minimum of the x86_64-v2 microarchitecture
++	 * RHEL10 has a minimum of the x86_64-v3 microarchitecture
++	 */
++
++	if (!boot_cpu_has(X86_FEATURE_CX16) || /* CMPXCHG16B */
++	    !boot_cpu_has(X86_FEATURE_LAHF_LM) || /* LAHF-SAHF */
++	    !boot_cpu_has(X86_FEATURE_POPCNT) ||
++	    !boot_cpu_has(X86_FEATURE_XMM3) || /* SSE-3 */
++	    !boot_cpu_has(X86_FEATURE_XMM4_1) || /* SSE4_1 */
++	    !boot_cpu_has(X86_FEATURE_XMM4_2) || /* SSE4_2 */
++	    !boot_cpu_has(X86_FEATURE_SSSE3)) {
++		mark_hardware_deprecated("x86_64-v1", "%s:%s",
++					 boot_cpu_data.x86_vendor_id, boot_cpu_data.x86_model_id);
++	} else if (!boot_cpu_has(X86_FEATURE_AVX) ||
++		   !boot_cpu_has(X86_FEATURE_AVX2) ||
++		   !boot_cpu_has(X86_FEATURE_BMI1) ||
++		   !boot_cpu_has(X86_FEATURE_BMI2) ||
++		   !boot_cpu_has(X86_FEATURE_F16C) ||
++		   !boot_cpu_has(X86_FEATURE_FMA) ||
++		   /* LZCNT is not explicitly listed, but appears to be paired with BMI2 */
++		   !boot_cpu_has(X86_FEATURE_MOVBE) ||
++		   !boot_cpu_has(X86_FEATURE_OSXSAVE)) {
++		mark_hardware_deprecated("x86_64-v2", "%s:%s",
++					 boot_cpu_data.x86_vendor_id, boot_cpu_data.x86_model_id);
++	}
 +}
 +#else
 +#define rh_check_supported()
@@ -333,7 +363,7 @@ index 84201071dfac..f8e3f192df8d 100644
  /*
   * Dump out kernel offset information on panic.
   */
-@@ -901,6 +946,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -901,6 +976,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -347,7 +377,7 @@ index 84201071dfac..f8e3f192df8d 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1064,19 +1116,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1146,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -368,7 +398,7 @@ index 84201071dfac..f8e3f192df8d 100644
  
  	reserve_initrd();
  
-@@ -1191,6 +1231,8 @@ void __init setup_arch(char **cmdline_p)
+@@ -1191,6 +1261,8 @@ void __init setup_arch(char **cmdline_p)
  		efi_apply_memmap_quirks();
  #endif
  
@@ -1684,7 +1714,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 0d124a8ca9c3..fb3ade9a09b0 100644
+index 60537c9224bf..aac439c01f8a 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1798,7 +1828,7 @@ index 74de1e64aeea..1b0e59c232f8 100644
  
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 3897334e3950..5d321f2116a6 100644
+index 7b87763e2f8a..b25333a39ed7 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -919,6 +919,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -2323,10 +2353,10 @@ index c74f47711f0b..e7bbf3b7a938 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index d9ad21058eed..4424db2f92f5 100644
+index d9ad21058eed..fce9d22d3080 100644
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -441,4 +441,18 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
+@@ -441,4 +441,20 @@ static inline void ftrace_dump(enum ftrace_dump_mode oops_dump_mode) { }
  	 /* OTHER_WRITABLE?  Generally considered a bad idea. */		\
  	 BUILD_BUG_ON_ZERO((perms) & 2) +					\
  	 (perms))
@@ -2335,11 +2365,13 @@ index d9ad21058eed..4424db2f92f5 100644
 +
 +#ifdef CONFIG_RHEL_DIFFERENCES
 +void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...);
++void mark_hardware_deprecated(const char *driver_name, char *fmt, ...);
 +void mark_tech_preview(const char *msg, struct module *mod);
 +void mark_partner_supported(const char *msg, struct module *mod);
 +void init_rh_check_status(char *fn_name);
 +#else
 +static inline void mark_hardware_unmaintained(const char *driver_name, char *fmt, ...) { }
++static inline void mark_hardware_deprecated(const char *driver_name, char *fmt, ...) { }
 +static inline void mark_tech_preview(const char *msg, struct module *mod) { }
 +static inline void mark_partner_supported(const char *msg, struct module *mod) { }
 +#endif

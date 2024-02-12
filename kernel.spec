@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc3.20240209git1f719a2f3fa6.31
+%define pkgrelease 0.rc4.20240212git716f4aaa7b48.35
 %define kversion 6
-%define tarfile_release 6.8-rc3-136-g1f719a2f3fa6
+%define tarfile_release 6.8-rc4-3-g716f4aaa7b48
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc3.20240209git1f719a2f3fa6.31%{?buildid}%{?dist}
+%define specrelease 0.rc4.20240212git716f4aaa7b48.35%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -2102,8 +2102,8 @@ BuildKernel() {
     SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
-    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
     rm vmlinuz.tmp
     %endif
     %ifarch s390x ppc64le
@@ -2550,8 +2550,8 @@ BuildKernel() {
 
 %if %{signkernel}
 
-	%pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-    	%pesign -s -i $KernelUnifiedImage.tmp -o $KernelUnifiedImage.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+	%pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.tmp -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+    	%pesign -s -i $KernelUnifiedImage.tmp -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
     	rm -f $KernelUnifiedImage.tmp
 
     	if [ ! -s $KernelUnifiedImage.signed ]; then
@@ -2746,7 +2746,7 @@ InitBuildVars
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_CXXFLAGS="${RPM_OPT_FLAGS}" LDFLAGS="%{__global_ldflags} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 # perf
 # make sure check-headers.sh is executable
@@ -3839,9 +3839,30 @@ fi\
 #
 #
 %changelog
-* Fri Feb 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.1f719a2f3fa6.31]
+* Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.35]
 - tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
 - tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+
+* Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.34]
+- spec: Set EXTRA_CXXFLAGS for perf demangle-cxx.o (Josh Stone) [2233269]
+- Flip values for FSCACHE and NETFS_SUPPORT to avoid mismatch (Justin M. Forbes)
+- Turn on SECURITY_DMESG_RESTRICT (Justin M. Forbes)
+- redhat: forward-port genlog.py updates from c9s (Jan Stancek)
+- arch/x86: mark x86_64-v1 and x86_64-v2 processors as deprecated (Prarit Bhargava)
+- Linux v6.8.0-0.rc4.716f4aaa7b48
+
+* Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.33]
+- fedora: Enable more Renesas RZ platform drivers (Peter Robinson)
+- fedora: a few aarch64 drivers and cleanups (Peter Robinson)
+- fedora: cavium nitrox cnn55xx (Peter Robinson)
+- Fix dist-get-buildreqs breakage around perl(ExtUtils::Embed) (Don Zickus)
+- Linux v6.8.0-0.rc4
+
+* Sun Feb 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.7521f258ea30.32]
+- Linux v6.8.0-0.rc3.7521f258ea30
+
+* Sat Feb 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.4a7bbe7519b6.31]
+- Linux v6.8.0-0.rc3.4a7bbe7519b6
 
 * Fri Feb 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc3.1f719a2f3fa6.30]
 - Linux v6.8.0-0.rc3.1f719a2f3fa6
