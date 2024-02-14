@@ -1,9 +1,3 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/6258d6f516bdc2424e858f302aabac9e566abfa7
- 6258d6f516bdc2424e858f302aabac9e566abfa7 tools/rv: Fix Makefile compiler options for clang
-
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/46903099542c97528e24cd43d6e0d7767bbf74f0
- 46903099542c97528e24cd43d6e0d7767bbf74f0 tools/rtla: Fix Makefile compiler options for clang
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/c370fa183583a96b50f77b356a66bad850d2cc49
  c370fa183583a96b50f77b356a66bad850d2cc49 arch/x86: mark x86_64-v1 and x86_64-v2 processors as deprecated
 

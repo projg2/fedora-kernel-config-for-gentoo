@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc4.20240212git716f4aaa7b48.35
+%define pkgrelease 0.rc4.20240214git7e90b5c295ec.37
 %define kversion 6
-%define tarfile_release 6.8-rc4-3-g716f4aaa7b48
+%define tarfile_release 6.8-rc4-14-g7e90b5c295ec
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20240212git716f4aaa7b48.35%{?buildid}%{?dist}
+%define specrelease 0.rc4.20240214git7e90b5c295ec.37%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -825,13 +825,13 @@ Source13: redhatsecureboot301.cer
 Source14: secureboot_s390.cer
 Source15: secureboot_ppc.cer
 
-%define secureboot_ca_1 %{SOURCE10}
-%define secureboot_ca_0 %{SOURCE11}
+%define secureboot_ca_0 %{SOURCE10}
+%define secureboot_ca_1 %{SOURCE11}
 %ifarch x86_64 aarch64
-%define secureboot_key_1 %{SOURCE12}
-%define pesign_name_1 redhatsecureboot501
-%define secureboot_key_0 %{SOURCE13}
-%define pesign_name_0 redhatsecureboot301
+%define secureboot_key_0 %{SOURCE12}
+%define pesign_name_0 redhatsecureboot501
+%define secureboot_key_1 %{SOURCE13}
+%define pesign_name_1 redhatsecureboot301
 %endif
 %ifarch s390x
 %define secureboot_key_0 %{SOURCE14}
@@ -850,12 +850,12 @@ Source11: redhatsecurebootca2.cer
 Source12: redhatsecureboot401.cer
 Source13: redhatsecureboot003.cer
 
-%define secureboot_ca_1 %{SOURCE10}
-%define secureboot_ca_0 %{SOURCE11}
-%define secureboot_key_1 %{SOURCE12}
-%define pesign_name_1 redhatsecureboot401
-%define secureboot_key_0 %{SOURCE13}
-%define pesign_name_0 redhatsecureboot003
+%define secureboot_ca_0 %{SOURCE10}
+%define secureboot_ca_1 %{SOURCE11}
+%define secureboot_key_0 %{SOURCE12}
+%define pesign_name_0 redhatsecureboot401
+%define secureboot_key_1 %{SOURCE13}
+%define pesign_name_1 redhatsecureboot003
 
 # released_kernel
 %endif
@@ -2102,8 +2102,8 @@ BuildKernel() {
     SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
-    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
-    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
     rm vmlinuz.tmp
     %endif
     %ifarch s390x ppc64le
@@ -2550,8 +2550,8 @@ BuildKernel() {
 
 %if %{signkernel}
 
-	%pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.tmp -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
-    	%pesign -s -i $KernelUnifiedImage.tmp -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+	%pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    	%pesign -s -i $KernelUnifiedImage.tmp -o $KernelUnifiedImage.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
     	rm -f $KernelUnifiedImage.tmp
 
     	if [ ! -s $KernelUnifiedImage.signed ]; then
@@ -3839,9 +3839,16 @@ fi\
 #
 #
 %changelog
-* Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.35]
-- tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
-- tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.37]
+- Flip secureboot signature order (Justin M. Forbes)
+
+* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.36]
+- Turn off CONFIG_INTEL_VSC for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc4.7e90b5c295ec
+
+* Tue Feb 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.c664e16bb1ba.35]
+- redhat/configs: rhel wireless requests (Jose Ignacio Tornos Martinez)
+- Linux v6.8.0-0.rc4.c664e16bb1ba
 
 * Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.34]
 - spec: Set EXTRA_CXXFLAGS for perf demangle-cxx.o (Josh Stone) [2233269]

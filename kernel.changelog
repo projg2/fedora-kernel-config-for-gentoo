@@ -1,6 +1,15 @@
-* Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.35]
-- tools/rv: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
-- tools/rtla: Fix Makefile compiler options for clang (Daniel Bristot de Oliveira)
+* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.37]
+- Flip secureboot signature order (Justin M. Forbes)
+Resolves: 
+
+* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.36]
+- Turn off CONFIG_INTEL_VSC for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc4.7e90b5c295ec
+Resolves: 
+
+* Tue Feb 13 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.c664e16bb1ba.35]
+- redhat/configs: rhel wireless requests (Jose Ignacio Tornos Martinez)
+- Linux v6.8.0-0.rc4.c664e16bb1ba
 Resolves: 
 
 * Mon Feb 12 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.716f4aaa7b48.34]

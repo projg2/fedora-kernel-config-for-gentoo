@@ -71,9 +71,7 @@
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- tools/tracing/rtla/Makefile                        |   7 +-
- tools/verification/rv/Makefile                     |   7 +-
- 75 files changed, 2159 insertions(+), 209 deletions(-)
+ 73 files changed, 2147 insertions(+), 207 deletions(-)
 
 diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
 index 31b3a25680d0..52ff60af2044 100644
@@ -3890,45 +3888,3 @@ index 3aaad75c9ce8..8c043d7957a8 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-index 2456a399eb9a..afd18c678ff5 100644
---- a/tools/tracing/rtla/Makefile
-+++ b/tools/tracing/rtla/Makefile
-@@ -28,10 +28,15 @@ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
- 		-fasynchronous-unwind-tables -fstack-clash-protection
- WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
- 
-+ifeq ($(CC),clang)
-+  FOPTS := $(filter-out -ffat-lto-objects, $(FOPTS))
-+  WOPTS := $(filter-out -Wno-maybe-uninitialized, $(WOPTS))
-+endif
-+
- TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
- 
- CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS)
--LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
-+LDFLAGS	:=	-flto=auto -ggdb $(EXTRA_LDFLAGS)
- LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
- 
- SRC	:=	$(wildcard src/*.c)
-diff --git a/tools/verification/rv/Makefile b/tools/verification/rv/Makefile
-index 3d0f3888a58c..485f8aeddbe0 100644
---- a/tools/verification/rv/Makefile
-+++ b/tools/verification/rv/Makefile
-@@ -28,10 +28,15 @@ FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
- 		-fasynchronous-unwind-tables -fstack-clash-protection
- WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
- 
-+ifeq ($(CC),clang)
-+  FOPTS := $(filter-out -ffat-lto-objects, $(FOPTS))
-+  WOPTS := $(filter-out -Wno-maybe-uninitialized, $(WOPTS))
-+endif
-+
- TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
- 
- CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS) $(EXTRA_CFLAGS) -I include
--LDFLAGS	:=	-ggdb $(EXTRA_LDFLAGS)
-+LDFLAGS	:=	-flto=auto -ggdb $(EXTRA_LDFLAGS)
- LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs)
- 
- SRC	:=	$(wildcard src/*.c)
