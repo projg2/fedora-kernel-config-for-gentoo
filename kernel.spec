@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc4.20240214git7e90b5c295ec.37
+%define pkgrelease 0.rc4.20240215git8d3dea210042.38
 %define kversion 6
-%define tarfile_release 6.8-rc4-14-g7e90b5c295ec
+%define tarfile_release 6.8-rc4-34-g8d3dea210042
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20240214git7e90b5c295ec.37%{?buildid}%{?dist}
+%define specrelease 0.rc4.20240215git8d3dea210042.38%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,8 +3839,11 @@ fi\
 #
 #
 %changelog
-* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.37]
+* Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.38]
 - Flip secureboot signature order (Justin M. Forbes)
+
+* Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.37]
+- Linux v6.8.0-0.rc4.8d3dea210042
 
 * Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.36]
 - Turn off CONFIG_INTEL_VSC for Fedora (Justin M. Forbes)

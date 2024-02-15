@@ -1,5 +1,9 @@
-* Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.37]
+* Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.38]
 - Flip secureboot signature order (Justin M. Forbes)
+Resolves: 
+
+* Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.37]
+- Linux v6.8.0-0.rc4.8d3dea210042
 Resolves: 
 
 * Wed Feb 14 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.7e90b5c295ec.36]
