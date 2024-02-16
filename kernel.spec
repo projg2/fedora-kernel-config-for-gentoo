@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc4.20240215git8d3dea210042.38
+%define pkgrelease 0.rc4.20240216git4f5e5092fdbf.39
 %define kversion 6
-%define tarfile_release 6.8-rc4-34-g8d3dea210042
+%define tarfile_release 6.8-rc4-180-g4f5e5092fdbf
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20240215git8d3dea210042.38%{?buildid}%{?dist}
+%define specrelease 0.rc4.20240216git4f5e5092fdbf.39%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3839,8 +3839,12 @@ fi\
 #
 #
 %changelog
-* Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.38]
+* Fri Feb 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.4f5e5092fdbf.39]
 - Flip secureboot signature order (Justin M. Forbes)
+
+* Fri Feb 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.4f5e5092fdbf.38]
+- Fedora configs for 6.8 (Justin M. Forbes)
+- Linux v6.8.0-0.rc4.4f5e5092fdbf
 
 * Thu Feb 15 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.8d3dea210042.37]
 - Linux v6.8.0-0.rc4.8d3dea210042
