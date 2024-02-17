@@ -1,3 +1,19 @@
+* Sat Feb 17 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.5-0]
+- Backported some CVE fixes lets note them in BugsFixed (Justin M. Forbes)
+- selftests: openvswitch: Add validation for the recursion test (Aaron Conole)
+- net: openvswitch: limit the number of recursions from action sets (Aaron Conole)
+- dm: limit the number of targets and parameter size area (Mikulas Patocka)
+- Add btrfs bug for 6.7.5 (Justin M. Forbes)
+- btrfs: don't refill whole delayed refs block reserve when starting transaction (Filipe Manana)
+- Add 6.7.5 fix to BugsFixed (Justin M. Forbes)
+- drm/amd: Stop evicting resources on APUs in suspend (Mario Limonciello)
+- Revert "drm/amd: flush any delayed gfxoff on suspend entry" (Mario Limonciello)
+- smb: client: set correct id, uid and cruid for multiuser automounts (Paulo Alcantara)
+- Turn off CONFIG_INTEL_VSC for Fedora (Justin M. Forbes)
+- platform/x86: Support for mode FN key (Mark Pearson)
+- Linux v6.7.5
+Resolves: 
+
 * Mon Feb 05 2024 Augusto Caringi <acaringi@redhat.com> [6.7.4-0]
 - Add keyboard resume bugfixes (Justin M. Forbes)
 - Input: atkbd - do not skip atkbd_deactivate() when skipping ATKBD_CMD_GETID (Hans de Goede)

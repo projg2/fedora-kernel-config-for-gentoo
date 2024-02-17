@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.4
-%define specversion 6.7.4
+%define specrpmversion 6.7.5
+%define specversion 6.7.5
 %define patchversion 6.7
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.7.4
+%define tarfile_release 6.7.5
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.7.4
+%define kabiversion 6.7.5
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3830,6 +3830,21 @@ fi\
 #
 #
 %changelog
+* Sat Feb 17 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.5-0]
+- Backported some CVE fixes lets note them in BugsFixed (Justin M. Forbes)
+- selftests: openvswitch: Add validation for the recursion test (Aaron Conole)
+- net: openvswitch: limit the number of recursions from action sets (Aaron Conole)
+- dm: limit the number of targets and parameter size area (Mikulas Patocka)
+- Add btrfs bug for 6.7.5 (Justin M. Forbes)
+- btrfs: don't refill whole delayed refs block reserve when starting transaction (Filipe Manana)
+- Add 6.7.5 fix to BugsFixed (Justin M. Forbes)
+- drm/amd: Stop evicting resources on APUs in suspend (Mario Limonciello)
+- Revert "drm/amd: flush any delayed gfxoff on suspend entry" (Mario Limonciello)
+- smb: client: set correct id, uid and cruid for multiuser automounts (Paulo Alcantara)
+- Turn off CONFIG_INTEL_VSC for Fedora (Justin M. Forbes)
+- platform/x86: Support for mode FN key (Mark Pearson)
+- Linux v6.7.5
+
 * Mon Feb 05 2024 Augusto Caringi <acaringi@redhat.com> [6.7.4-0]
 - Add keyboard resume bugfixes (Justin M. Forbes)
 - Input: atkbd - do not skip atkbd_deactivate() when skipping ATKBD_CMD_GETID (Hans de Goede)
