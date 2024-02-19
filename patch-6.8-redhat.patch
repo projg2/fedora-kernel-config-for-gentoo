@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 7e0b2ad98905..471aa68c5ab6 100644
+index 41fa8a2565f5..0822937e6cef 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1712,7 +1712,7 @@ index ee4da9ab8013..d395d11eadc4 100644
  	if (ret < 0)
  		goto err_allowedips;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 60537c9224bf..aac439c01f8a 100644
+index 0a96362912ce..d99b3bc5f649 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -252,6 +252,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -3866,10 +3866,10 @@ index cd84d8ea1dfb..e4c70a0312bc 100644
  
  const struct lsm_id lockdown_lsmid = {
 diff --git a/security/security.c b/security/security.c
-index 3aaad75c9ce8..8c043d7957a8 100644
+index 7035ee35a393..e1d54a896ef9 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5508,6 +5508,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5511,6 +5511,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

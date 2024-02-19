@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc4.20240216git4f5e5092fdbf.39
+%define pkgrelease 0.rc5.41
 %define kversion 6
-%define tarfile_release 6.8-rc4-180-g4f5e5092fdbf
+%define tarfile_release 6.8-rc5
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc4.20240216git4f5e5092fdbf.39%{?buildid}%{?dist}
+%define specrelease 0.rc5.41%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -935,6 +935,7 @@ Source87: flavors
 
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
+Source102: nvidiagpuoot001.x509
 
 Source200: check-kabi
 
@@ -1879,7 +1880,8 @@ done
 %if %{signkernel}%{signmodules}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
-cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
+cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem > ../certs/rhel.pem
 %ifarch s390x ppc64le
 openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
 cat secureboot.pem >> ../certs/rhel.pem
@@ -3839,8 +3841,20 @@ fi\
 #
 #
 %changelog
-* Fri Feb 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.4f5e5092fdbf.39]
+* Mon Feb 19 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.41]
+- Linux v6.8.0-0.rc5
+
+* Sun Feb 18 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.c02197fc9076.40]
+- Linux v6.8.0-0.rc4.c02197fc9076
+
+* Sat Feb 17 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.c1ca10ceffbb.39]
+- Add xe to drm module filters (Justin M. Forbes)
+- Turn off the DRM_XE_KUNIT_TEST for Fedora (Justin M. Forbes)
 - Flip secureboot signature order (Justin M. Forbes)
+- all: clean up some removed configs (Peter Robinson)
+- redhat: add nvidia oot signing key (Dave Airlie)
+- gitlab-ci: support CI for zfcpdump kernel on ELN (Michael Hofmann)
+- Linux v6.8.0-0.rc4.c1ca10ceffbb
 
 * Fri Feb 16 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc4.4f5e5092fdbf.38]
 - Fedora configs for 6.8 (Justin M. Forbes)
