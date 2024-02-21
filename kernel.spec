@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc5.41
+%define pkgrelease 0.rc5.20240221git9fc1ccccfd8d.42
 %define kversion 6
-%define tarfile_release 6.8-rc5
+%define tarfile_release 6.8-rc5-20-g9fc1ccccfd8d
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.41%{?buildid}%{?dist}
+%define specrelease 0.rc5.20240221git9fc1ccccfd8d.42%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -1137,6 +1137,19 @@ Summary: Developement files for the perf library from kernel source
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
 
+%package -n libperf-debuginfo
+Summary: Debug information for package libperf
+Group: Development/Debug
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n libperf-debuginfo
+This package provides debug information for the libperf package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so(\.debug)?|XXX' -o libperf-debuginfo.list}
 # with_libperf
 %endif
 
@@ -3561,6 +3574,7 @@ fi\
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
 
+%files -f libperf-debuginfo.list -n libperf-debuginfo
 # with_libperf
 %endif
 
@@ -3841,6 +3855,18 @@ fi\
 #
 #
 %changelog
+* Wed Feb 21 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.0-0.rc5.20240221git9fc1ccccfd8d.42]
+- Add libperf-debuginfo subpackage (Justin M. Forbes)
+
+* Wed Feb 21 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.9fc1ccccfd8d.42]
+- redhat/configs: For aarch64/RT, default kstack randomization off (Jeremy Linton)
+- redhat/Makefile: remove an unused target (Ondrej Mosnacek)
+- redhat/Makefile: fix setup-source and document its caveat (Ondrej Mosnacek)
+- redhat/Makefile: fix race condition when making the KABI tarball (Ondrej Mosnacek)
+- redhat/Makefile: refactor KABI tarball creation (Ondrej Mosnacek)
+- Turn XFS_SUPPORT_V4 back on for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc5.9fc1ccccfd8d
+
 * Mon Feb 19 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.41]
 - Linux v6.8.0-0.rc5
 
