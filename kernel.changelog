@@ -1,3 +1,16 @@
+* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.44]
+- Add libperf-debuginfo subpackage (Justin M. Forbes)
+Resolves: 
+
+* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.43]
+- redhat/self-test: Update CROSS_DISABLED_PACKAGES (Prarit Bhargava)
+- redhat: Do not build libperf with cross builds (Prarit Bhargava)
+- redhat/configs: enable CONFIG_PINCTRL_INTEL_PLATFORM for RHEL (David Arcari)
+- redhat/configs: enable CONFIG_PINCTRL_METEORPOINT for RHEL (David Arcari)
+- redhat/configs: intel pinctrl config cleanup (David Arcari)
+- Linux v6.8.0-0.rc5.39133352cbed
+Resolves: 
+
 * Wed Feb 21 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.9fc1ccccfd8d.42]
 - redhat/configs: For aarch64/RT, default kstack randomization off (Jeremy Linton)
 - redhat/Makefile: remove an unused target (Ondrej Mosnacek)

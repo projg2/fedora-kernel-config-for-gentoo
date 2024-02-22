@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc5.20240221git9fc1ccccfd8d.42
+%define pkgrelease 0.rc5.20240222git39133352cbed.44
 %define kversion 6
-%define tarfile_release 6.8-rc5-20-g9fc1ccccfd8d
+%define tarfile_release 6.8-rc5-29-g39133352cbed
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20240221git9fc1ccccfd8d.42%{?buildid}%{?dist}
+%define specrelease 0.rc5.20240222git39133352cbed.44%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3855,8 +3855,16 @@ fi\
 #
 #
 %changelog
-* Wed Feb 21 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.0-0.rc5.20240221git9fc1ccccfd8d.42]
+* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.44]
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+
+* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.43]
+- redhat/self-test: Update CROSS_DISABLED_PACKAGES (Prarit Bhargava)
+- redhat: Do not build libperf with cross builds (Prarit Bhargava)
+- redhat/configs: enable CONFIG_PINCTRL_INTEL_PLATFORM for RHEL (David Arcari)
+- redhat/configs: enable CONFIG_PINCTRL_METEORPOINT for RHEL (David Arcari)
+- redhat/configs: intel pinctrl config cleanup (David Arcari)
+- Linux v6.8.0-0.rc5.39133352cbed
 
 * Wed Feb 21 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.9fc1ccccfd8d.42]
 - redhat/configs: For aarch64/RT, default kstack randomization off (Jeremy Linton)
