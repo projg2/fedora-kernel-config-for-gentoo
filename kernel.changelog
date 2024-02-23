@@ -1,3 +1,8 @@
+* Fri Feb 23 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.6-0]
+- Add CVE fix for 6.7.6 (Justin M. Forbes)
+- Linux v6.7.6
+Resolves: 
+
 * Sat Feb 17 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.5-0]
 - Backported some CVE fixes lets note them in BugsFixed (Justin M. Forbes)
 - selftests: openvswitch: Add validation for the recursion test (Aaron Conole)

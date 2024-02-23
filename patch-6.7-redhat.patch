@@ -16,23 +16,17 @@
  drivers/firmware/sysfb.c                           |  18 ++-
  drivers/gpu/drm/amd/amdgpu/amdgpu.h                |   2 +
  drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c           |  15 ++
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  12 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c            |   9 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  11 +-
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
  drivers/input/keyboard/atkbd.c                     |   3 +-
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
  drivers/iommu/iommu.c                              |  22 +++
- drivers/md/dm-core.h                               |   2 +
- drivers/md/dm-ioctl.c                              |   3 +-
- drivers/md/dm-table.c                              |   9 +-
  drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
  drivers/pci/quirks.c                               |  24 +++
  drivers/platform/x86/thinkpad_acpi.c               |  20 ++-
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
- fs/btrfs/transaction.c                             |  38 +----
- fs/smb/client/namespace.c                          |  16 ++
  include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   1 +
@@ -41,7 +35,6 @@
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
- net/openvswitch/flow_netlink.c                     |  49 ++++--
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -51,7 +44,7 @@
  tools/power/cpupower/Makefile                      |   2 +-
  .../selftests/net/openvswitch/openvswitch.sh       |  13 ++
  .../testing/selftests/net/openvswitch/ovs-dpctl.py |  71 +++++++--
- 53 files changed, 866 insertions(+), 253 deletions(-)
+ 46 files changed, 796 insertions(+), 196 deletions(-)
 
 diff --git a/Documentation/admin-guide/laptops/thinkpad-acpi.rst b/Documentation/admin-guide/laptops/thinkpad-acpi.rst
 index 98d304010170..7f674a6cfa8a 100644
@@ -79,7 +72,7 @@ index 98d304010170..7f674a6cfa8a 100644
  
  0x1020	0x1F	unknown
 diff --git a/Makefile b/Makefile
-index 0f5bb9ddc98f..a46f4937fa26 100644
+index d07a8e0179ac..5779c09825d9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -660,7 +653,7 @@ index 2deebece810e..cc21ed67a330 100644
 +
  #endif /* CONFIG_SUSPEND */
 diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 5fe1df95dc38..7f48c7ec4136 100644
+index 19bc8d47317b..7f48c7ec4136 100644
 --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
 +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
 @@ -4441,13 +4441,15 @@ int amdgpu_device_prepare(struct drm_device *dev)
@@ -697,35 +690,6 @@ index 5fe1df95dc38..7f48c7ec4136 100644
  }
  
  /**
-@@ -4496,7 +4503,6 @@ int amdgpu_device_suspend(struct drm_device *dev, bool fbcon)
- 		drm_fb_helper_set_suspend_unlocked(adev_to_drm(adev)->fb_helper, true);
- 
- 	cancel_delayed_work_sync(&adev->delayed_init_work);
--	flush_delayed_work(&adev->gfx.gfx_off_delay_work);
- 
- 	amdgpu_ras_suspend(adev);
- 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-index b9674c57c436..6ddc8e3360e2 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c
-@@ -723,8 +723,15 @@ void amdgpu_gfx_off_ctrl(struct amdgpu_device *adev, bool enable)
- 
- 		if (adev->gfx.gfx_off_req_count == 0 &&
- 		    !adev->gfx.gfx_off_state) {
--			schedule_delayed_work(&adev->gfx.gfx_off_delay_work,
-+			/* If going to s2idle, no need to wait */
-+			if (adev->in_s0ix) {
-+				if (!amdgpu_dpm_set_powergating_by_smu(adev,
-+						AMD_IP_BLOCK_TYPE_GFX, true))
-+					adev->gfx.gfx_off_state = true;
-+			} else {
-+				schedule_delayed_work(&adev->gfx.gfx_off_delay_work,
- 					      delay);
-+			}
- 		}
- 	} else {
- 		if (adev->gfx.gfx_off_req_count == 0) {
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1132,60 +1096,6 @@ index 33e2a9b5d339..6ae1abc3f11c 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
-diff --git a/drivers/md/dm-core.h b/drivers/md/dm-core.h
-index 095b9b49aa82..e6757a30dcca 100644
---- a/drivers/md/dm-core.h
-+++ b/drivers/md/dm-core.h
-@@ -22,6 +22,8 @@
- #include "dm-ima.h"
- 
- #define DM_RESERVED_MAX_IOS		1024
-+#define DM_MAX_TARGETS			1048576
-+#define DM_MAX_TARGET_PARAMS		1024
- 
- struct dm_io;
- 
-diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
-index e65058e0ed06..3b1ad7127cb8 100644
---- a/drivers/md/dm-ioctl.c
-+++ b/drivers/md/dm-ioctl.c
-@@ -1941,7 +1941,8 @@ static int copy_params(struct dm_ioctl __user *user, struct dm_ioctl *param_kern
- 			   minimum_data_size - sizeof(param_kernel->version)))
- 		return -EFAULT;
- 
--	if (param_kernel->data_size < minimum_data_size) {
-+	if (unlikely(param_kernel->data_size < minimum_data_size) ||
-+	    unlikely(param_kernel->data_size > DM_MAX_TARGETS * DM_MAX_TARGET_PARAMS)) {
- 		DMERR("Invalid data size in the ioctl structure: %u",
- 		      param_kernel->data_size);
- 		return -EINVAL;
-diff --git a/drivers/md/dm-table.c b/drivers/md/dm-table.c
-index 198d38b53322..08c9c20f9c66 100644
---- a/drivers/md/dm-table.c
-+++ b/drivers/md/dm-table.c
-@@ -129,7 +129,12 @@ static int alloc_targets(struct dm_table *t, unsigned int num)
- int dm_table_create(struct dm_table **result, blk_mode_t mode,
- 		    unsigned int num_targets, struct mapped_device *md)
- {
--	struct dm_table *t = kzalloc(sizeof(*t), GFP_KERNEL);
-+	struct dm_table *t;
-+
-+	if (num_targets > DM_MAX_TARGETS)
-+		return -EOVERFLOW;
-+
-+	t = kzalloc(sizeof(*t), GFP_KERNEL);
- 
- 	if (!t)
- 		return -ENOMEM;
-@@ -144,7 +149,7 @@ int dm_table_create(struct dm_table **result, blk_mode_t mode,
- 
- 	if (!num_targets) {
- 		kfree(t);
--		return -ENOMEM;
-+		return -EOVERFLOW;
- 	}
- 
- 	if (alloc_targets(t, num_targets)) {
 diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
 index 6b6aa3c36744..0ce08e9a0a3d 100644
 --- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
@@ -1310,10 +1220,10 @@ index 542a4bbb21bc..62161ceed2e2 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index ef8d9bda94ac..3fab06f3b43e 100644
+index 4854d883e601..e1ee781ca985 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5777,6 +5777,13 @@ static void hub_event(struct work_struct *work)
+@@ -5795,6 +5795,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -1327,103 +1237,6 @@ index ef8d9bda94ac..3fab06f3b43e 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/btrfs/transaction.c b/fs/btrfs/transaction.c
-index 5b3333ceef04..c52807d97efa 100644
---- a/fs/btrfs/transaction.c
-+++ b/fs/btrfs/transaction.c
-@@ -564,56 +564,22 @@ static int btrfs_reserve_trans_metadata(struct btrfs_fs_info *fs_info,
- 					u64 num_bytes,
- 					u64 *delayed_refs_bytes)
- {
--	struct btrfs_block_rsv *delayed_refs_rsv = &fs_info->delayed_refs_rsv;
- 	struct btrfs_space_info *si = fs_info->trans_block_rsv.space_info;
--	u64 extra_delayed_refs_bytes = 0;
--	u64 bytes;
-+	u64 bytes = num_bytes + *delayed_refs_bytes;
- 	int ret;
- 
--	/*
--	 * If there's a gap between the size of the delayed refs reserve and
--	 * its reserved space, than some tasks have added delayed refs or bumped
--	 * its size otherwise (due to block group creation or removal, or block
--	 * group item update). Also try to allocate that gap in order to prevent
--	 * using (and possibly abusing) the global reserve when committing the
--	 * transaction.
--	 */
--	if (flush == BTRFS_RESERVE_FLUSH_ALL &&
--	    !btrfs_block_rsv_full(delayed_refs_rsv)) {
--		spin_lock(&delayed_refs_rsv->lock);
--		if (delayed_refs_rsv->size > delayed_refs_rsv->reserved)
--			extra_delayed_refs_bytes = delayed_refs_rsv->size -
--				delayed_refs_rsv->reserved;
--		spin_unlock(&delayed_refs_rsv->lock);
--	}
--
--	bytes = num_bytes + *delayed_refs_bytes + extra_delayed_refs_bytes;
--
- 	/*
- 	 * We want to reserve all the bytes we may need all at once, so we only
- 	 * do 1 enospc flushing cycle per transaction start.
- 	 */
- 	ret = btrfs_reserve_metadata_bytes(fs_info, si, bytes, flush);
--	if (ret == 0) {
--		if (extra_delayed_refs_bytes > 0)
--			btrfs_migrate_to_delayed_refs_rsv(fs_info,
--							  extra_delayed_refs_bytes);
--		return 0;
--	}
--
--	if (extra_delayed_refs_bytes > 0) {
--		bytes -= extra_delayed_refs_bytes;
--		ret = btrfs_reserve_metadata_bytes(fs_info, si, bytes, flush);
--		if (ret == 0)
--			return 0;
--	}
- 
- 	/*
- 	 * If we are an emergency flush, which can steal from the global block
- 	 * reserve, then attempt to not reserve space for the delayed refs, as
- 	 * we will consume space for them from the global block reserve.
- 	 */
--	if (flush == BTRFS_RESERVE_FLUSH_ALL_STEAL) {
-+	if (ret && flush == BTRFS_RESERVE_FLUSH_ALL_STEAL) {
- 		bytes -= *delayed_refs_bytes;
- 		*delayed_refs_bytes = 0;
- 		ret = btrfs_reserve_metadata_bytes(fs_info, si, bytes, flush);
-diff --git a/fs/smb/client/namespace.c b/fs/smb/client/namespace.c
-index a6968573b775..4a517b280f2b 100644
---- a/fs/smb/client/namespace.c
-+++ b/fs/smb/client/namespace.c
-@@ -168,6 +168,21 @@ static char *automount_fullpath(struct dentry *dentry, void *page)
- 	return s;
- }
- 
-+static void fs_context_set_ids(struct smb3_fs_context *ctx)
-+{
-+	kuid_t uid = current_fsuid();
-+	kgid_t gid = current_fsgid();
-+
-+	if (ctx->multiuser) {
-+		if (!ctx->uid_specified)
-+			ctx->linux_uid = uid;
-+		if (!ctx->gid_specified)
-+			ctx->linux_gid = gid;
-+	}
-+	if (!ctx->cruid_specified)
-+		ctx->cred_uid = uid;
-+}
-+
- /*
-  * Create a vfsmount that we can automount
-  */
-@@ -205,6 +220,7 @@ static struct vfsmount *cifs_do_automount(struct path *path)
- 	tmp.leaf_fullpath = NULL;
- 	tmp.UNC = tmp.prepath = NULL;
- 	tmp.dfs_root_ses = NULL;
-+	fs_context_set_ids(&tmp);
- 
- 	rc = smb3_fs_context_dup(ctx, &tmp);
- 	if (rc) {
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 9cc5bf32f6f2..7462fb1fc99e 100644
 --- a/include/linux/efi.h
@@ -1493,7 +1306,7 @@ index 9cc5bf32f6f2..7462fb1fc99e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 472cb16458b0..7c0f6dd800cb 100644
+index ed3d517460f8..93ff72b07031 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -407,6 +407,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1773,183 +1586,8 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index 88965e2068ac..ebc5728aab4e 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -48,6 +48,7 @@ struct ovs_len_tbl {
- 
- #define OVS_ATTR_NESTED -1
- #define OVS_ATTR_VARIABLE -2
-+#define OVS_COPY_ACTIONS_MAX_DEPTH 16
- 
- static bool actions_may_change_flow(const struct nlattr *actions)
- {
-@@ -2545,13 +2546,15 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 				  const struct sw_flow_key *key,
- 				  struct sw_flow_actions **sfa,
- 				  __be16 eth_type, __be16 vlan_tci,
--				  u32 mpls_label_count, bool log);
-+				  u32 mpls_label_count, bool log,
-+				  u32 depth);
- 
- static int validate_and_copy_sample(struct net *net, const struct nlattr *attr,
- 				    const struct sw_flow_key *key,
- 				    struct sw_flow_actions **sfa,
- 				    __be16 eth_type, __be16 vlan_tci,
--				    u32 mpls_label_count, bool log, bool last)
-+				    u32 mpls_label_count, bool log, bool last,
-+				    u32 depth)
- {
- 	const struct nlattr *attrs[OVS_SAMPLE_ATTR_MAX + 1];
- 	const struct nlattr *probability, *actions;
-@@ -2602,7 +2605,8 @@ static int validate_and_copy_sample(struct net *net, const struct nlattr *attr,
- 		return err;
- 
- 	err = __ovs_nla_copy_actions(net, actions, key, sfa,
--				     eth_type, vlan_tci, mpls_label_count, log);
-+				     eth_type, vlan_tci, mpls_label_count, log,
-+				     depth + 1);
- 
- 	if (err)
- 		return err;
-@@ -2617,7 +2621,8 @@ static int validate_and_copy_dec_ttl(struct net *net,
- 				     const struct sw_flow_key *key,
- 				     struct sw_flow_actions **sfa,
- 				     __be16 eth_type, __be16 vlan_tci,
--				     u32 mpls_label_count, bool log)
-+				     u32 mpls_label_count, bool log,
-+				     u32 depth)
- {
- 	const struct nlattr *attrs[OVS_DEC_TTL_ATTR_MAX + 1];
- 	int start, action_start, err, rem;
-@@ -2660,7 +2665,8 @@ static int validate_and_copy_dec_ttl(struct net *net,
- 		return action_start;
- 
- 	err = __ovs_nla_copy_actions(net, actions, key, sfa, eth_type,
--				     vlan_tci, mpls_label_count, log);
-+				     vlan_tci, mpls_label_count, log,
-+				     depth + 1);
- 	if (err)
- 		return err;
- 
-@@ -2674,7 +2680,8 @@ static int validate_and_copy_clone(struct net *net,
- 				   const struct sw_flow_key *key,
- 				   struct sw_flow_actions **sfa,
- 				   __be16 eth_type, __be16 vlan_tci,
--				   u32 mpls_label_count, bool log, bool last)
-+				   u32 mpls_label_count, bool log, bool last,
-+				   u32 depth)
- {
- 	int start, err;
- 	u32 exec;
-@@ -2694,7 +2701,8 @@ static int validate_and_copy_clone(struct net *net,
- 		return err;
- 
- 	err = __ovs_nla_copy_actions(net, attr, key, sfa,
--				     eth_type, vlan_tci, mpls_label_count, log);
-+				     eth_type, vlan_tci, mpls_label_count, log,
-+				     depth + 1);
- 	if (err)
- 		return err;
- 
-@@ -3063,7 +3071,7 @@ static int validate_and_copy_check_pkt_len(struct net *net,
- 					   struct sw_flow_actions **sfa,
- 					   __be16 eth_type, __be16 vlan_tci,
- 					   u32 mpls_label_count,
--					   bool log, bool last)
-+					   bool log, bool last, u32 depth)
- {
- 	const struct nlattr *acts_if_greater, *acts_if_lesser_eq;
- 	struct nlattr *a[OVS_CHECK_PKT_LEN_ATTR_MAX + 1];
-@@ -3111,7 +3119,8 @@ static int validate_and_copy_check_pkt_len(struct net *net,
- 		return nested_acts_start;
- 
- 	err = __ovs_nla_copy_actions(net, acts_if_lesser_eq, key, sfa,
--				     eth_type, vlan_tci, mpls_label_count, log);
-+				     eth_type, vlan_tci, mpls_label_count, log,
-+				     depth + 1);
- 
- 	if (err)
- 		return err;
-@@ -3124,7 +3133,8 @@ static int validate_and_copy_check_pkt_len(struct net *net,
- 		return nested_acts_start;
- 
- 	err = __ovs_nla_copy_actions(net, acts_if_greater, key, sfa,
--				     eth_type, vlan_tci, mpls_label_count, log);
-+				     eth_type, vlan_tci, mpls_label_count, log,
-+				     depth + 1);
- 
- 	if (err)
- 		return err;
-@@ -3152,12 +3162,16 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 				  const struct sw_flow_key *key,
- 				  struct sw_flow_actions **sfa,
- 				  __be16 eth_type, __be16 vlan_tci,
--				  u32 mpls_label_count, bool log)
-+				  u32 mpls_label_count, bool log,
-+				  u32 depth)
- {
- 	u8 mac_proto = ovs_key_mac_proto(key);
- 	const struct nlattr *a;
- 	int rem, err;
- 
-+	if (depth > OVS_COPY_ACTIONS_MAX_DEPTH)
-+		return -EOVERFLOW;
-+
- 	nla_for_each_nested(a, attr, rem) {
- 		/* Expected argument lengths, (u32)-1 for variable length. */
- 		static const u32 action_lens[OVS_ACTION_ATTR_MAX + 1] = {
-@@ -3355,7 +3369,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 			err = validate_and_copy_sample(net, a, key, sfa,
- 						       eth_type, vlan_tci,
- 						       mpls_label_count,
--						       log, last);
-+						       log, last, depth);
- 			if (err)
- 				return err;
- 			skip_copy = true;
-@@ -3426,7 +3440,7 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 			err = validate_and_copy_clone(net, a, key, sfa,
- 						      eth_type, vlan_tci,
- 						      mpls_label_count,
--						      log, last);
-+						      log, last, depth);
- 			if (err)
- 				return err;
- 			skip_copy = true;
-@@ -3440,7 +3454,8 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 							      eth_type,
- 							      vlan_tci,
- 							      mpls_label_count,
--							      log, last);
-+							      log, last,
-+							      depth);
- 			if (err)
- 				return err;
- 			skip_copy = true;
-@@ -3450,7 +3465,8 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 		case OVS_ACTION_ATTR_DEC_TTL:
- 			err = validate_and_copy_dec_ttl(net, a, key, sfa,
- 							eth_type, vlan_tci,
--							mpls_label_count, log);
-+							mpls_label_count, log,
-+							depth);
- 			if (err)
- 				return err;
- 			skip_copy = true;
-@@ -3495,7 +3511,8 @@ int ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
- 
- 	(*sfa)->orig_len = nla_len(attr);
- 	err = __ovs_nla_copy_actions(net, attr, key, sfa, key->eth.type,
--				     key->eth.vlan.tci, mpls_label_count, log);
-+				     key->eth.vlan.tci, mpls_label_count, log,
-+				     0);
- 	if (err)
- 		ovs_nla_free_flow_actions(*sfa);
- 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index cb6406f485a9..71e1f15d9dce 100644
+index f7c4d3fe4381..7fd1ef7930c6 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -1960,7 +1598,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1987,6 +1988,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1988,6 +1989,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1973,7 +1611,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2047,6 +2054,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2048,6 +2055,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -2055,10 +1693,10 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 266cec94369b..c572a4da96b2 100644
+index 2cfecdb054c3..4e5fc4ec5896 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5248,6 +5248,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5283,6 +5283,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  
