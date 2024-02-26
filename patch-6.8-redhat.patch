@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 41fa8a2565f5..0822937e6cef 100644
+index 6cdb5717bfe0..dd56cbe27ea7 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -2162,7 +2162,7 @@ index 675332e49a7b..4a3cbddacef1 100644
  };
  MODULE_DEVICE_TABLE(pci, qla4xxx_pci_tbl);
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 0833b3e6aa6e..104f819ce813 100644
+index bdd0acf7fa3c..2adde1beb158 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -2180,7 +2180,7 @@ index 0833b3e6aa6e..104f819ce813 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4045,6 +4053,8 @@ static int __init init_sd(void)
+@@ -4069,6 +4077,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -2208,10 +2208,10 @@ index e38a4124f610..0a607946e5f9 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/fs/afs/main.c b/fs/afs/main.c
-index 1b3bd21c168a..9f9d70b60a1f 100644
+index a14f6013e316..6c20453fdf76 100644
 --- a/fs/afs/main.c
 +++ b/fs/afs/main.c
-@@ -200,6 +200,9 @@ static int __init afs_init(void)
+@@ -199,6 +199,9 @@ static int __init afs_init(void)
  		goto error_proc;
  	}
  

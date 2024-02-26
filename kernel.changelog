@@ -1,5 +1,28 @@
-* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.44]
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.49]
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+Resolves: 
+
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.48]
+- Linux v6.8.0-0.rc6
+Resolves: 
+
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ab0a97cffa0b.47]
+- Enable merge-rt pipeline (Don Zickus)
+- kernel.spec: include the GDB plugin in kernel-debuginfo (Ondrej Mosnacek)
+Resolves: 
+
+* Sun Feb 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ab0a97cffa0b.46]
+- Turn on DRM_NOUVEAU_GSP_DEFAULT for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc5.ab0a97cffa0b
+Resolves: 
+
+* Sat Feb 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.603c04e27c3e.45]
+- Linux v6.8.0-0.rc5.603c04e27c3e
+Resolves: 
+
+* Fri Feb 23 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ffd2cb6b718e.44]
+- Set late new config HDC3020 for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc5.ffd2cb6b718e
 Resolves: 
 
 * Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.43]

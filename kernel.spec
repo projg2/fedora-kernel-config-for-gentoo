@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc5.20240222git39133352cbed.44
+%define pkgrelease 0.rc6.49
 %define kversion 6
-%define tarfile_release 6.8-rc5-29-g39133352cbed
+%define tarfile_release 6.8-rc6
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc5.20240222git39133352cbed.44%{?buildid}%{?dist}
+%define specrelease 0.rc6.49%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -2428,6 +2428,13 @@ BuildKernel() {
 		    cp %{vmlinux_decompressor} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux.decompressor
 	    fi
     fi
+
+    # build and copy the vmlinux-gdb plugin files into kernel-debuginfo
+    %{make} %{?_smp_mflags} scripts_gdb
+    cp -a --parents scripts/gdb/{,linux/}*.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    # this should be a relative symlink (Kbuild creates an absolute one)
+    ln -s scripts/gdb/vmlinux-gdb.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux-gdb.py
+    %py_byte_compile %{python3} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/scripts/gdb
 %endif
 
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name "*.ko" -type f >modnames
@@ -3574,7 +3581,10 @@ fi\
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
 
+%if %{with_debuginfo}
 %files -f libperf-debuginfo.list -n libperf-debuginfo
+%endif
+
 # with_libperf
 %endif
 
@@ -3855,8 +3865,26 @@ fi\
 #
 #
 %changelog
-* Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.44]
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.49]
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.48]
+- Linux v6.8.0-0.rc6
+
+* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ab0a97cffa0b.47]
+- Enable merge-rt pipeline (Don Zickus)
+- kernel.spec: include the GDB plugin in kernel-debuginfo (Ondrej Mosnacek)
+
+* Sun Feb 25 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ab0a97cffa0b.46]
+- Turn on DRM_NOUVEAU_GSP_DEFAULT for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc5.ab0a97cffa0b
+
+* Sat Feb 24 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.603c04e27c3e.45]
+- Linux v6.8.0-0.rc5.603c04e27c3e
+
+* Fri Feb 23 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.ffd2cb6b718e.44]
+- Set late new config HDC3020 for Fedora (Justin M. Forbes)
+- Linux v6.8.0-0.rc5.ffd2cb6b718e
 
 * Thu Feb 22 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc5.39133352cbed.43]
 - redhat/self-test: Update CROSS_DISABLED_PACKAGES (Prarit Bhargava)
