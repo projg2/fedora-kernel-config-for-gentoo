@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc6.49
+%define pkgrelease 0.rc6.20240227git45ec2f5f6ed3.50
 %define kversion 6
-%define tarfile_release 6.8-rc6
+%define tarfile_release 6.8-rc6-11-g45ec2f5f6ed3
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.49%{?buildid}%{?dist}
+%define specrelease 0.rc6.20240227git45ec2f5f6ed3.50%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3865,8 +3865,14 @@ fi\
 #
 #
 %changelog
-* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.49]
+* Tue Feb 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.45ec2f5f6ed3.50]
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+
+* Tue Feb 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.45ec2f5f6ed3.49]
+- redhat/configs: Disable CONFIG_INFINIBAND_USNIC (Kamal Heib)
+- Enable CONFIG_BMI323_I2C=m for Fedora x86_64 builds (Hans de Goede)
+- gitlab-ci: drop test_makefile job (Scott Weaver)
+- Linux v6.8.0-0.rc6.45ec2f5f6ed3
 
 * Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.48]
 - Linux v6.8.0-0.rc6

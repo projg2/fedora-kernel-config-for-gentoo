@@ -1,5 +1,12 @@
-* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.49]
+* Tue Feb 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.45ec2f5f6ed3.50]
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+Resolves: 
+
+* Tue Feb 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.45ec2f5f6ed3.49]
+- redhat/configs: Disable CONFIG_INFINIBAND_USNIC (Kamal Heib)
+- Enable CONFIG_BMI323_I2C=m for Fedora x86_64 builds (Hans de Goede)
+- gitlab-ci: drop test_makefile job (Scott Weaver)
+- Linux v6.8.0-0.rc6.45ec2f5f6ed3
 Resolves: 
 
 * Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.48]
