@@ -1,3 +1,9 @@
+* Fri Mar 01 2024 Augusto Caringi <acaringi@redhat.com> [6.7.7-0]
+- Add rhbz 2266309 to BugsFixed (Justin M. Forbes)
+- Add libperf-debuginfo subpackage (Justin M. Forbes)
+- Linux v6.7.7
+Resolves: 
+
 * Fri Feb 23 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.6-0]
 - Add CVE fix for 6.7.6 (Justin M. Forbes)
 - Linux v6.7.6

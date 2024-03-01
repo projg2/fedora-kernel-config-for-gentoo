@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.6
-%define specversion 6.7.6
+%define specrpmversion 6.7.7
+%define specversion 6.7.7
 %define patchversion 6.7
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.7.6
+%define tarfile_release 6.7.7
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.7.6
+%define kabiversion 6.7.7
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -1146,6 +1146,19 @@ License: GPL-2.0-only AND (LGPL-2.1-only OR BSD-2-Clause)
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
 
+%package -n libperf-debuginfo
+Summary: Debug information for package libperf
+Group: Development/Debug
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n libperf-debuginfo
+This package provides debug information for the libperf package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so(\.debug)?|XXX' -o libperf-debuginfo.list}
 # with_libperf
 %endif
 
@@ -3550,6 +3563,10 @@ fi\
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
 
+%if %{with_debuginfo}
+%files -f libperf-debuginfo.list -n libperf-debuginfo
+%endif
+
 # with_libperf
 %endif
 
@@ -3830,6 +3847,11 @@ fi\
 #
 #
 %changelog
+* Fri Mar 01 2024 Augusto Caringi <acaringi@redhat.com> [6.7.7-0]
+- Add rhbz 2266309 to BugsFixed (Justin M. Forbes)
+- Add libperf-debuginfo subpackage (Justin M. Forbes)
+- Linux v6.7.7
+
 * Fri Feb 23 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.6-0]
 - Add CVE fix for 6.7.6 (Justin M. Forbes)
 - Linux v6.7.6
