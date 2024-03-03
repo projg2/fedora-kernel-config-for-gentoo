@@ -69,7 +69,7 @@ index 98d304010170..7f674a6cfa8a 100644
  
  0x1020	0x1F	unknown
 diff --git a/Makefile b/Makefile
-index 72ee3609aae3..824a28d7c706 100644
+index 6569f2255d50..a2a34ca1e63b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
