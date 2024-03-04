@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc6.20240229git805d849d7c3c.51
+%define pkgrelease 0.rc7.55
 %define kversion 6
-%define tarfile_release 6.8-rc6-37-g805d849d7c3c
+%define tarfile_release 6.8-rc7
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc6.20240229git805d849d7c3c.51%{?buildid}%{?dist}
+%define specrelease 0.rc7.55%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3960,6 +3960,19 @@ fi\
 #
 #
 %changelog
+* Mon Mar 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.55]
+- Linux v6.8.0-0.rc7
+
+* Sun Mar 03 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.04b8076df253.54]
+- redhat/configs: Disable CONFIG_INFINIBAND_VMWARE_PVRDMA (Kamal Heib)
+- Linux v6.8.0-0.rc6.04b8076df253
+
+* Sat Mar 02 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.5ad3cb0ed525.53]
+- Linux v6.8.0-0.rc6.5ad3cb0ed525
+
+* Fri Mar 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.87adedeba51a.52]
+- Linux v6.8.0-0.rc6.87adedeba51a
+
 * Thu Feb 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.805d849d7c3c.51]
 - gitlab-ci: fix merge tree URL for gating pipelines (Michael Hofmann)
 - Revert "net: bump CONFIG_MAX_SKB_FRAGS to 45" (Marcelo Ricardo Leitner)
