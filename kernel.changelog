@@ -1,5 +1,38 @@
-* Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.49]
+* Mon Mar 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.55]
+- Linux v6.8.0-0.rc7
+Resolves: 
+
+* Sun Mar 03 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.04b8076df253.54]
+- redhat/configs: Disable CONFIG_INFINIBAND_VMWARE_PVRDMA (Kamal Heib)
+- Linux v6.8.0-0.rc6.04b8076df253
+Resolves: 
+
+* Sat Mar 02 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.5ad3cb0ed525.53]
+- Linux v6.8.0-0.rc6.5ad3cb0ed525
+Resolves: 
+
+* Fri Mar 01 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.87adedeba51a.52]
+- Linux v6.8.0-0.rc6.87adedeba51a
+Resolves: 
+
+* Thu Feb 29 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.805d849d7c3c.51]
+- gitlab-ci: fix merge tree URL for gating pipelines (Michael Hofmann)
+- Revert "net: bump CONFIG_MAX_SKB_FRAGS to 45" (Marcelo Ricardo Leitner)
+- uki: use systemd-pcrphase dracut module (Gerd Hoffmann)
 - Add libperf-debuginfo subpackage (Justin M. Forbes)
+- redhat/kernel.spec.template: Add log_msg macro (Prarit Bhargava)
+- Linux v6.8.0-0.rc6.805d849d7c3c
+Resolves: 
+
+* Wed Feb 28 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.cf1182944c7c.50]
+- Linux v6.8.0-0.rc6.cf1182944c7c
+Resolves: 
+
+* Tue Feb 27 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.45ec2f5f6ed3.49]
+- redhat/configs: Disable CONFIG_INFINIBAND_USNIC (Kamal Heib)
+- Enable CONFIG_BMI323_I2C=m for Fedora x86_64 builds (Hans de Goede)
+- gitlab-ci: drop test_makefile job (Scott Weaver)
+- Linux v6.8.0-0.rc6.45ec2f5f6ed3
 Resolves: 
 
 * Mon Feb 26 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc6.48]

@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 6cdb5717bfe0..dd56cbe27ea7 100644
+index 0e36eff14608..3ed9c1bdd44a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -250,7 +250,7 @@ index d1f3b56e7afc..eaefd0d7cfff 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 0b97bcde70c6..c624a2bee5f8 100644
+index fbc4e60d027c..42df548e212b 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
 @@ -1588,6 +1588,7 @@ static void __init early_identify_cpu(struct cpuinfo_x86 *c)
@@ -259,8 +259,8 @@ index 0b97bcde70c6..c624a2bee5f8 100644
  		get_cpu_cap(c);
 +		get_model_name(c); /* RHEL: get model name for unsupported check */
  		setup_force_cpu_cap(X86_FEATURE_CPUID);
+ 		get_cpu_address_sizes(c);
  		cpu_parse_early_param();
- 
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
 index 84201071dfac..d00c2713281e 100644
 --- a/arch/x86/kernel/setup.c
