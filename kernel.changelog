@@ -1,3 +1,9 @@
+* Wed Mar 06 2024 Augusto Caringi <acaringi@redhat.com> [6.7.9-0]
+- Add some CVE fixes for 6.7.9 (Justin M. Forbes)
+- Bluetooth: rfcomm: Fix null-ptr-deref in rfcomm_check_security (Yuxuan Hu)
+- Linux v6.7.9
+Resolves: 
+
 * Sun Mar 03 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.7.8-0]
 - Linux v6.7.8
 Resolves: 
