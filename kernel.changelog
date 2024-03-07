@@ -1,3 +1,25 @@
+* Thu Mar 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.67be068d31d4.59]
+- Linux v6.8.0-0.rc7.67be068d31d4
+Resolves: 
+
+* Thu Mar 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.58]
+- Fedora: enable Microchip and their useful drivers (Peter Robinson)
+- spec: suppress "set +x" output (Jan Stancek)
+- redhat/configs: Disable CONFIG_RDMA_SIW (Kamal Heib)
+- redhat/configs: Disable CONFIG_RDMA_RXE (Kamal Heib)
+- redhat/configs: Disable CONFIG_MLX4 (Kamal Heib)
+- redhat/configs: Disable CONFIG_INFINIBAND_HFI1 and CONFIG_INFINIBAND_RDMAVT (Kamal Heib)
+Resolves: 
+
+* Wed Mar 06 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.57]
+- Consolidate 6.8 configs to common (Justin M. Forbes)
+Resolves: 
+
+* Tue Mar 05 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.56]
+- Remove rt-automated and master-rt-devel logic (Don Zickus)
+- Add support for CI octopus merging (Don Zickus)
+Resolves: 
+
 * Mon Mar 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.55]
 - Linux v6.8.0-0.rc7
 Resolves: 
