@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc7.20240307git67be068d31d4.59
+%define pkgrelease 0.rc7.20240308git3aaa8ce7a335.60
 %define kversion 6
-%define tarfile_release 6.8-rc7-51-g67be068d31d4
+%define tarfile_release 6.8-rc7-142-g3aaa8ce7a335
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.20240307git67be068d31d4.59%{?buildid}%{?dist}
+%define specrelease 0.rc7.20240308git3aaa8ce7a335.60%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -3961,6 +3961,10 @@ fi\
 #
 #
 %changelog
+* Fri Mar 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.3aaa8ce7a335.60]
+- gitlab-ci: enable all variants for rawhide/eln builder image gating (Michael Hofmann)
+- Linux v6.8.0-0.rc7.3aaa8ce7a335
+
 * Thu Mar 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.67be068d31d4.59]
 - Linux v6.8.0-0.rc7.67be068d31d4
 
