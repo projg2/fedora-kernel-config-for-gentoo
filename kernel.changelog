@@ -1,3 +1,15 @@
+* Mon Mar 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-63]
+- Linux v6.8.0
+Resolves: 
+
+* Sun Mar 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.005f6f34bd47.62]
+- Linux v6.8.0-0.rc7.005f6f34bd47
+Resolves: 
+
+* Sat Mar 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.09e5c48fea17.61]
+- Linux v6.8.0-0.rc7.09e5c48fea17
+Resolves: 
+
 * Fri Mar 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.3aaa8ce7a335.60]
 - gitlab-ci: enable all variants for rawhide/eln builder image gating (Michael Hofmann)
 - Linux v6.8.0-0.rc7.3aaa8ce7a335
