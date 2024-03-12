@@ -136,7 +136,7 @@ index 000000000000..7465c78a90e6
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 0e36eff14608..3ed9c1bdd44a 100644
+index c7ee53f4bf04..a151f77036d7 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1403,7 +1403,7 @@ index ce1995a2827f..57f9e9de4747 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 258d5fe3d395..f7298e3dc8f3 100644
+index 42eaebb3bf5c..7a35119c3144 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -1566,9 +1566,9 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	}
  
  out:
-@@ -981,6 +997,8 @@ static int rmi_driver_remove(struct device *dev)
- 	irq_domain_remove(data->irqdomain);
- 	data->irqdomain = NULL;
+@@ -978,6 +994,8 @@ static int rmi_driver_remove(struct device *dev)
+ 
+ 	rmi_disable_irq(rmi_dev, false);
  
 +	cancel_work_sync(&data->attn_work);
 +

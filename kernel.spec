@@ -163,13 +163,13 @@ Summary: The Linux kernel
 %define specrpmversion 6.8.0
 %define specversion 6.8.0
 %define patchversion 6.8
-%define pkgrelease 0.rc7.55
+%define pkgrelease 63
 %define kversion 6
-%define tarfile_release 6.8-rc7
+%define tarfile_release 6.8
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
-%define specrelease 0.rc7.55%{?buildid}%{?dist}
+%define specrelease 63%{?buildid}%{?dist}
 # This defines the kabi tarball version
 %define kabiversion 6.8.0
 
@@ -1724,7 +1724,8 @@ Prebuilt 64k unified kernel image for virtual machines.
 %kernel_ipaclones_package
 %endif
 
-%define log_msg() set +x \
+%define log_msg() \
+	{ set +x; } 2>/dev/null \
 	_log_msglineno=$(grep -n %{*} %{_specdir}/${RPM_PACKAGE_NAME}.spec | grep log_msg | cut -d":" -f1) \
 	echo "kernel.spec:${_log_msglineno}: %{*}" \
 	set -x
@@ -3960,6 +3961,37 @@ fi\
 #
 #
 %changelog
+* Mon Mar 11 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-63]
+- Linux v6.8.0
+
+* Sun Mar 10 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.005f6f34bd47.62]
+- Linux v6.8.0-0.rc7.005f6f34bd47
+
+* Sat Mar 09 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.09e5c48fea17.61]
+- Linux v6.8.0-0.rc7.09e5c48fea17
+
+* Fri Mar 08 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.3aaa8ce7a335.60]
+- gitlab-ci: enable all variants for rawhide/eln builder image gating (Michael Hofmann)
+- Linux v6.8.0-0.rc7.3aaa8ce7a335
+
+* Thu Mar 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.67be068d31d4.59]
+- Linux v6.8.0-0.rc7.67be068d31d4
+
+* Thu Mar 07 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.58]
+- Fedora: enable Microchip and their useful drivers (Peter Robinson)
+- spec: suppress "set +x" output (Jan Stancek)
+- redhat/configs: Disable CONFIG_RDMA_SIW (Kamal Heib)
+- redhat/configs: Disable CONFIG_RDMA_RXE (Kamal Heib)
+- redhat/configs: Disable CONFIG_MLX4 (Kamal Heib)
+- redhat/configs: Disable CONFIG_INFINIBAND_HFI1 and CONFIG_INFINIBAND_RDMAVT (Kamal Heib)
+
+* Wed Mar 06 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.57]
+- Consolidate 6.8 configs to common (Justin M. Forbes)
+
+* Tue Mar 05 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.56]
+- Remove rt-automated and master-rt-devel logic (Don Zickus)
+- Add support for CI octopus merging (Don Zickus)
+
 * Mon Mar 04 2024 Fedora Kernel Team <kernel-team@fedoraproject.org> [6.8.0-0.rc7.55]
 - Linux v6.8.0-0.rc7
 
