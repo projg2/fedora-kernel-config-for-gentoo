@@ -1,3 +1,8 @@
+* Mon Mar 18 2024 Augusto Caringi <acaringi@redhat.com> [6.7.10-0]
+- redhat/configs: Enable CONFIG_MITIGATION_RFDS (Augusto Caringi)
+- Linux v6.7.10
+Resolves: 
+
 * Wed Mar 06 2024 Augusto Caringi <acaringi@redhat.com> [6.7.9-0]
 - Add some CVE fixes for 6.7.9 (Justin M. Forbes)
 - Bluetooth: rfcomm: Fix null-ptr-deref in rfcomm_check_security (Yuxuan Hu)

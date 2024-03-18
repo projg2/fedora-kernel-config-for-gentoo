@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.9
-%define specversion 6.7.9
+%define specrpmversion 6.7.10
+%define specversion 6.7.10
 %define patchversion 6.7
 %define pkgrelease 200
 %define kversion 6
-%define tarfile_release 6.7.9
+%define tarfile_release 6.7.10
 # This is needed to do merge window version magic
 %define patchlevel 7
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 200%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.7.9
+%define kabiversion 6.7.10
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -3847,6 +3847,10 @@ fi\
 #
 #
 %changelog
+* Mon Mar 18 2024 Augusto Caringi <acaringi@redhat.com> [6.7.10-0]
+- redhat/configs: Enable CONFIG_MITIGATION_RFDS (Augusto Caringi)
+- Linux v6.7.10
+
 * Wed Mar 06 2024 Augusto Caringi <acaringi@redhat.com> [6.7.9-0]
 - Add some CVE fixes for 6.7.9 (Justin M. Forbes)
 - Bluetooth: rfcomm: Fix null-ptr-deref in rfcomm_check_security (Yuxuan Hu)
