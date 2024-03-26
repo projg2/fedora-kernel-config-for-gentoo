@@ -12,6 +12,8 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++----
  drivers/firmware/efi/secureboot.c                  |  38 +++++
+ drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |   2 +
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
@@ -19,6 +21,7 @@
  drivers/pci/quirks.c                               |  24 +++
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
+ fs/xfs/xfs_iomap.c                                 |   4 +-
  include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   1 +
@@ -33,10 +36,10 @@
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 35 files changed, 652 insertions(+), 174 deletions(-)
+ 38 files changed, 673 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 95b320ada47c..0c5f6bdb7c1d 100644
+index 33d8e822f6f1..0451e4e79e5c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -230,10 +233,10 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index e6ed1ba91e5c..6a87d6ca4a84 100644
+index 617f3e0e963d..92d9066ab4c2 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1761,6 +1761,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -540,6 +543,55 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 3c197db42c9d..16e4a2e90fae 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -34,6 +34,22 @@
+ #include <linux/screen_info.h>
+ #include <linux/sysfb.h>
+ 
++static int skip_simpledrm;
++
++static int __init simpledrm_disable(char *opt)
++{
++	if (!opt)
++                return -EINVAL;
++
++	get_option(&opt, &skip_simpledrm);
++
++	if (skip_simpledrm)
++		pr_info("The simpledrm driver will not be probed\n");
++
++	return 0;
++}
++early_param("nvidia-drm.modeset", simpledrm_disable);
++
+ static struct platform_device *pd;
+ static DEFINE_MUTEX(disable_lock);
+ static bool disabled;
+@@ -85,7 +101,7 @@ static __init int sysfb_init(void)
+ 
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+-	if (compatible) {
++	if (compatible && !skip_simpledrm) {
+ 		pd = sysfb_create_simplefb(si, &mode);
+ 		if (!IS_ERR(pd))
+ 			goto unlock_mutex;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 94bdb5fa6ebc..1fbaf7b81d69 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -4524,6 +4524,8 @@ int amdgpu_device_prepare(struct drm_device *dev)
+ 	if (r)
+ 		goto unprepare;
+ 
++	flush_delayed_work(&adev->gfx.gfx_off_delay_work);
++
+ 	for (i = 0; i < adev->num_ip_blocks; i++) {
+ 		if (!adev->ip_blocks[i].status.valid)
+ 			continue;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -643,7 +695,7 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index ce1995a2827f..57f9e9de4747 100644
+index 2e2cabc5f50a..8b44d990f978 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -10,6 +10,7 @@
@@ -886,7 +938,7 @@ index 42eaebb3bf5c..7a35119c3144 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d14413916f93..ff6cbc3fa509 100644
+index cd1210026ac5..448d146c6757 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -897,7 +949,7 @@ index d14413916f93..ff6cbc3fa509 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -3095,6 +3096,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -3106,6 +3107,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -926,7 +978,7 @@ index d14413916f93..ff6cbc3fa509 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d797df6e5f3e..a6921ee1535a 100644
+index 2ebbe51a7efe..503f79c60365 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4433,6 +4433,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1006,6 +1058,28 @@ index e38a4124f610..0a607946e5f9 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/xfs/xfs_iomap.c b/fs/xfs/xfs_iomap.c
+index 18c8f168b153..055cdec2e9ad 100644
+--- a/fs/xfs/xfs_iomap.c
++++ b/fs/xfs/xfs_iomap.c
+@@ -1323,7 +1323,7 @@ xfs_seek_iomap_begin(
+ 	if (cow_fsb != NULLFILEOFF && cow_fsb <= offset_fsb) {
+ 		if (data_fsb < cow_fsb + cmap.br_blockcount)
+ 			end_fsb = min(end_fsb, data_fsb);
+-		xfs_trim_extent(&cmap, offset_fsb, end_fsb);
++		xfs_trim_extent(&cmap, offset_fsb, end_fsb - offset_fsb);
+ 		seq = xfs_iomap_inode_sequence(ip, IOMAP_F_SHARED);
+ 		error = xfs_bmbt_to_iomap(ip, iomap, &cmap, flags,
+ 				IOMAP_F_SHARED, seq);
+@@ -1348,7 +1348,7 @@ xfs_seek_iomap_begin(
+ 	imap.br_state = XFS_EXT_NORM;
+ done:
+ 	seq = xfs_iomap_inode_sequence(ip, 0);
+-	xfs_trim_extent(&imap, offset_fsb, end_fsb);
++	xfs_trim_extent(&imap, offset_fsb, end_fsb - offset_fsb);
+ 	error = xfs_bmbt_to_iomap(ip, iomap, &imap, flags, 0, seq);
+ out_unlock:
+ 	xfs_iunlock(ip, lockmode);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index c74f47711f0b..e7bbf3b7a938 100644
 --- a/include/linux/efi.h
@@ -1313,7 +1387,7 @@ index d0eb20f90b26..a99c045730e9 100644
  				    size_t *uctx_len, void *val, size_t val_len,
  				    u64 id, u64 flags)
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 36681911c05a..7c0a6425dd38 100644
+index b0b99348e1a8..c35cc48d782c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \

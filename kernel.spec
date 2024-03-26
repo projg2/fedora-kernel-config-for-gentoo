@@ -160,18 +160,18 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.1
-%define specversion 6.8.1
+%define specrpmversion 6.8.2
+%define specversion 6.8.2
 %define patchversion 6.8
 %define pkgrelease 300
 %define kversion 6
-%define tarfile_release 6.8.1
+%define tarfile_release 6.8.2
 # This is needed to do merge window version magic
 %define patchlevel 8
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease 300%{?buildid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.8.1
+%define kabiversion 6.8.2
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
 # fatal kernel package build error
@@ -391,8 +391,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %endif
 
@@ -422,8 +420,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %define with_headers 0
 %define with_efiuki 0
@@ -1133,6 +1129,7 @@ This package contains the kernel source perf library.
 
 %package -n libperf-devel
 Summary: Developement files for the perf library from kernel source
+Requires: libperf = %{version}-%{release}
 %description -n libperf-devel
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
@@ -1149,7 +1146,7 @@ This package provides debug information for the libperf package.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so(\.debug)?|XXX' -o libperf-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so.*(\.debug)?|XXX' -o libperf-debuginfo.list}
 # with_libperf
 %endif
 
@@ -1553,7 +1550,7 @@ Provides: installonlypkg(kernel)\
 Provides: kernel-%{?1:%{1}-}uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires(pre): %{kernel_prereq}\
-Requires(pre): systemd >= 254-1\
+Requires(pre): systemd\
 %endif\
 %endif\
 %if %{with_gcov}\
@@ -2484,7 +2481,7 @@ BuildKernel() {
     fi
 
     # build and copy the vmlinux-gdb plugin files into kernel-debuginfo
-    %{make} %{?_smp_mflags} scripts_gdb
+    %{make} ARCH=$Arch %{?_smp_mflags} scripts_gdb
     cp -a --parents scripts/gdb/{,linux/}*.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     # this should be a relative symlink (Kbuild creates an absolute one)
     ln -s scripts/gdb/vmlinux-gdb.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux-gdb.py
@@ -3823,7 +3820,7 @@ fi\
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
-%ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%ghost /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
@@ -3962,6 +3959,26 @@ fi\
 #
 #
 %changelog
+* Tue Mar 26 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.2-300]
+- Config updates for stable (Justin M. Forbes)
+
+* Tue Mar 26 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.2-0]
+- xfs: fix SEEK_HOLE/DATA for regions with active COW extents (Dave Chinner)
+- redhat: make libperf-devel require libperf %%{version}-%%{release} (Jan Stancek)
+- kernel.spec: drop custom mode also for System.map ghost entry (Jan Stancek)
+- kernel.spec: fix libperf-debuginfo content (Jan Stancek)
+- redhat/kernel.spec.template: enable cross for base/RT (Peter Robinson)
+- redhat/kernel.spec.template: Fix cross compiling (Peter Robinson)
+- Add more bugs to BugsFixed (Justin M. Forbes)
+- Add bug to BugsFixed (Justin M. Forbes)
+- Turn on CONFIG_READ_ONLY_THP_FOR_FS for Fedora (Justin M. Forbes)
+- Change fedora-stable-release.sh to use git am (Justin M. Forbes)
+- drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set (Javier Martinez Canillas)
+- Revert libcpupower soname bump for F38/39 (Justin M. Forbes)
+- Fix up requires for UKI (Justin M. Forbes)
+- drm/amd: Flush GFXOFF requests in prepare stage (Mario Limonciello)
+- Linux v6.8.2
+
 * Wed Mar 20 2024 Augusto Caringi <acaringi@redhat.com> [6.8.1-0]
 - redhat/configs: Enable CONFIG_MITIGATION_RFDS (Augusto Caringi)
 - fedora: Enable MCP9600 (Peter Robinson)

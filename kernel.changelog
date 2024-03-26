@@ -1,3 +1,21 @@
+* Tue Mar 26 2024 Justin M. Forbes <jforbes@fedoraproject.org> [6.8.2-0]
+- xfs: fix SEEK_HOLE/DATA for regions with active COW extents (Dave Chinner)
+- redhat: make libperf-devel require libperf %%{version}-%%{release} (Jan Stancek)
+- kernel.spec: drop custom mode also for System.map ghost entry (Jan Stancek)
+- kernel.spec: fix libperf-debuginfo content (Jan Stancek)
+- redhat/kernel.spec.template: enable cross for base/RT (Peter Robinson)
+- redhat/kernel.spec.template: Fix cross compiling (Peter Robinson)
+- Add more bugs to BugsFixed (Justin M. Forbes)
+- Add bug to BugsFixed (Justin M. Forbes)
+- Turn on CONFIG_READ_ONLY_THP_FOR_FS for Fedora (Justin M. Forbes)
+- Change fedora-stable-release.sh to use git am (Justin M. Forbes)
+- drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set (Javier Martinez Canillas)
+- Revert libcpupower soname bump for F38/39 (Justin M. Forbes)
+- Fix up requires for UKI (Justin M. Forbes)
+- drm/amd: Flush GFXOFF requests in prepare stage (Mario Limonciello)
+- Linux v6.8.2
+Resolves: 
+
 * Wed Mar 20 2024 Augusto Caringi <acaringi@redhat.com> [6.8.1-0]
 - redhat/configs: Enable CONFIG_MITIGATION_RFDS (Augusto Caringi)
 - fedora: Enable MCP9600 (Peter Robinson)

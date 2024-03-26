@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/fccd579ad79c032dd402f674fd94e80ad52519f6
+ fccd579ad79c032dd402f674fd94e80ad52519f6 xfs: fix SEEK_HOLE/DATA for regions with active COW extents
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/43f3e284f6c98c0cb6133ac90e0b4bba02975053
+ 43f3e284f6c98c0cb6133ac90e0b4bba02975053 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6a6428d08805f225c5425fc7c2b3c093267cb206
+ 6a6428d08805f225c5425fc7c2b3c093267cb206 drm/amd: Flush GFXOFF requests in prepare stage
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/bbd16c78228ab6d4515fc98bd574a9a213e9428c
  bbd16c78228ab6d4515fc98bd574a9a213e9428c scsi: sd: Add "probe_type" module parameter to allow synchronous probing
 
